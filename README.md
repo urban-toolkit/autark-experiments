@@ -58,7 +58,7 @@ inside it, and writes a `log.jsonl` (full `stream-json` transcript) and a
 is concatenated with a shared appendix of common instructions (OSM querying
 guidelines, console logging requirements, and the build/serve validation loop)
 before being sent to the model. The full text of that appendix is in
-`run_trials.sh` and is reproduced in Section 1 of `supplemental.pdf`.
+`run_trials.sh`.
 
 ## Metrics
 
@@ -68,5 +68,4 @@ analysis of the final source tree the agent left in each trial's `output/`
 directory after passing the validation loop. The number of trials per
 `(app, condition)` pair is uneven — some pairs were re-run while iterating on
 prompt wording. The averages reported in Section 5.3 of the paper correspond to
-the `ALL, avg` rows. See `supplemental.pdf` for the headline figures, per-app
-averages, and per-trial detail.
+the `ALL, avg` rows.
