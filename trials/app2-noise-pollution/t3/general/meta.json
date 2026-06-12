@@ -1,0 +1,11 @@
+{
+  "app": "app2-noise-pollution",
+  "trial": "t3",
+  "variant": "general",
+  "model": "opus",
+  "max_turns": 150,
+  "duration_seconds": 720,
+  "exit_code": 0,
+  "status": "ok",
+  "timestamp": "2026-06-12T14:28:02Z"
+}

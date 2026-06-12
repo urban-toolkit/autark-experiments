@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manhattan Noisescape</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; }
+      canvas { width: 100%; height: 100%; display: block; }
+
+      #loading {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #1a1a2e; color: #eee; display: flex;
+        flex-direction: column; align-items: center; justify-content: center;
+        font-family: system-ui, sans-serif; z-index: 10; text-align: center;
+      }
+      #loading h1 { font-size: 1.6rem; margin-bottom: 1rem; }
+      #loading p { font-size: 0.9rem; color: #aaa; max-width: 32rem; }
+      #loading.hidden { display: none; }
+      .spinner {
+        margin-top: 1.5rem; width: 28px; height: 28px;
+        border: 3px solid #444; border-top-color: #e63946;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      #hud {
+        position: fixed; top: 12px; left: 12px; z-index: 5;
+        font-family: system-ui, sans-serif; color: #eee;
+        background: rgba(26, 26, 46, 0.82); padding: 12px 14px;
+        border-radius: 8px; font-size: 0.8rem; line-height: 1.5;
+        max-width: 280px; pointer-events: none;
+      }
+      #hud.hidden { display: none; }
+      #hud h2 { font-size: 0.95rem; margin-bottom: 6px; }
+      #hud .legend {
+        height: 10px; border-radius: 5px; margin: 6px 0 2px;
+        background: linear-gradient(to right, #fff5f0, #67000d);
+      }
+      #hud .legend-labels { display: flex; justify-content: space-between; color: #bbb; }
+      #hud .hint { margin-top: 8px; color: #9aa; }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BdfefcT7.js"></script>
+  </head>
+  <body>
+    <div id="loading">
+      <h1>Manhattan Noisescape</h1>
+      <p id="status">Initializing…</p>
+      <div class="spinner"></div>
+    </div>
+
+    <div id="hud" class="hidden">
+      <h2>Noise complaints near buildings</h2>
+      <div>311 noise events within 500&nbsp;m of each building</div>
+      <div class="legend"></div>
+      <div class="legend-labels"><span>fewer</span><span>more</span></div>
+      <div class="hint">Click any layer (surface, parks, water, roads, buildings) to select it — the picked element is highlighted.</div>
+    </div>
+
+    <canvas id="map-canvas"></canvas>
+  </body>
+</html>
