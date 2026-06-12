@@ -1,0 +1,11 @@
+{
+  "app": "app1-subway-accessibility",
+  "trial": "t3",
+  "variant": "autark",
+  "model": "opus",
+  "max_turns": 150,
+  "duration_seconds": 357,
+  "exit_code": 0,
+  "status": "ok",
+  "timestamp": "2026-06-12T15:56:59Z"
+}

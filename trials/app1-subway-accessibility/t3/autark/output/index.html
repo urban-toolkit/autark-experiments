@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manhattan Buildings — Subway Accessibility 3D Map</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #12131a; }
+    canvas { width: 100%; height: 100%; display: block; }
+
+    #loading {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #e6e6e6; font-family: system-ui, sans-serif; font-size: 1.25rem;
+      text-align: center; z-index: 10;
+    }
+    #loading .phase { margin-top: 0.6rem; font-size: 0.9rem; color: #9aa0b0; }
+
+    .panel {
+      position: absolute; z-index: 5; display: none;
+      font-family: system-ui, sans-serif; color: #e6e6e6;
+      background: rgba(20, 22, 32, 0.82); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    #legend { left: 16px; bottom: 16px; width: 220px; }
+    #legend h3 { font-size: 0.82rem; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.02em; }
+    #legend .bar {
+      height: 12px; border-radius: 6px; margin: 6px 0 4px;
+      background: linear-gradient(to right, #fff5f0, #fb7050, #67000d);
+    }
+    #legend .labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: #c2c6d2; }
+
+    #stats { right: 16px; top: 16px; width: 240px; }
+    #stats h3 { font-size: 0.82rem; font-weight: 600; margin-bottom: 8px; }
+    #stats .row { display: flex; justify-content: space-between; font-size: 0.8rem; margin: 4px 0; }
+    #stats .row .v { color: #ffd9c8; font-variant-numeric: tabular-nums; }
+
+    #error {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 20; display: none; max-width: 80%;
+      font-family: system-ui, sans-serif; color: #ffd7d7;
+      background: rgba(120, 20, 20, 0.9); border-radius: 8px; padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div>Loading Manhattan 3D Map…</div>
+    <div class="phase" id="phase">Initializing…</div>
+  </div>
+
+  <div id="error"></div>
+
+  <div id="stats" class="panel">
+    <h3>Subway Accessibility</h3>
+    <div class="row"><span>Buildings</span><span class="v" id="stat-buildings">—</span></div>
+    <div class="row"><span>Subway stations</span><span class="v" id="stat-stations">—</span></div>
+    <div class="row"><span>Max within 500&nbsp;m</span><span class="v" id="stat-max">—</span></div>
+    <div class="row"><span>Avg within 500&nbsp;m</span><span class="v" id="stat-avg">—</span></div>
+  </div>
+
+  <div id="legend" class="panel">
+    <h3>Stations within 500&nbsp;m</h3>
+    <div class="bar"></div>
+    <div class="labels"><span id="legend-min">0</span><span id="legend-max">—</span></div>
+  </div>
+
+  <canvas id="map-canvas"></canvas>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
