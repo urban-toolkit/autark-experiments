@@ -4,8 +4,8 @@ set -euo pipefail
 # ── Configuration ──────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TRIALS_DIR="$SCRIPT_DIR/trials"
-MAX_TURNS="${MAX_TURNS:-50}"
-MODEL="${MODEL:-sonnet}"
+MAX_TURNS="${MAX_TURNS:-150}"
+MODEL="${MODEL:-opus}"
 
 # ── Determine which apps and variants to run ──────────────────
 # Usage: ./run_trials.sh [app] [variant]
@@ -41,7 +41,7 @@ for app in "${APPS[@]}"; do
   if [ -n "$FILTER_VARIANT" ]; then
     VARIANTS=("$FILTER_VARIANT")
   else
-    VARIANTS=(autark general)
+    VARIANTS=(autark general utk)
   fi
 
   for variant in "${VARIANTS[@]}"; do
@@ -64,10 +64,16 @@ for app in "${APPS[@]}"; do
 
     # Run Claude Code in the output directory
     # --output-format stream-json: detailed JSON log of every tool call and response
+    #   (the final `result` event carries the authoritative usage/cost totals)
     # --verbose: required for stream-json
-    # tee saves the full JSON stream; terminal shows progress
+    # stdout is written straight to log.jsonl (no pipe/tee) so the stream — and
+    # especially the trailing `result` event — can't be truncated; nvm chatter
+    # and claude's stderr are kept out of the JSON file.
     START_TIME=$(date +%s)
-    (cd "$OUTPUT_DIR" && claude --print --verbose \
+    # Don't let a crashed/non-zero `claude` abort the whole run (set -e + pipefail);
+    # we capture the exit code so meta.json is always written, even on failure.
+    set +e
+    (cd "$OUTPUT_DIR" && nvm use 24.14 >/dev/null && NODE_OPTIONS="--max-old-space-size=8192" claude --print --verbose \
       --model "$MODEL" \
       --max-turns "$MAX_TURNS" \
       --dangerously-skip-permissions \
@@ -112,18 +118,37 @@ After generating the project, you MUST validate that it fully works by following
 6. Use curl to check that the JavaScript bundle loads without errors (e.g., curl -s http://localhost:3005/src/main.ts or the built entry point).
 7. Review the application code end-to-end: check that all imports resolve, all APIs are called correctly, and all data flows are connected.
 8. If ANY step fails, debug the root cause, fix it, and repeat from step 2.
-9. Kill the dev server when done (kill any background node processes).
+9. Kill the dev server when done. Kill it by port or by the specific PID you backgrounded (e.g. \`fuser -k 3005/tcp\` or \`kill \$!\`). Do NOT use broad patterns like \`pkill -f vite\`, \`pkill node\`, or \`killall node\` — the parent agent process is itself a node process and its command line contains \"vite\", so these patterns will kill the agent before it can finish.
 10. Do NOT stop until you have a system that compiles, builds, serves, and has no obvious runtime errors. If you exhaust all reasonable fixes, document what remains broken." \
-    2>&1 | tee "$TRIAL_DIR/log.jsonl")
+    > "$TRIAL_DIR/log.jsonl" 2> "$TRIAL_DIR/stderr.log")
+    CLAUDE_EXIT=$?
+    set -e
     END_TIME=$(date +%s)
     ELAPSED=$((END_TIME - START_TIME))
     MINUTES=$((ELAPSED / 60))
     SECONDS=$((ELAPSED % 60))
 
-    echo "{\"app\": \"$app\", \"trial\": \"$TRIAL_NUM\", \"variant\": \"$variant\", \"model\": \"$MODEL\", \"max_turns\": $MAX_TURNS, \"duration_seconds\": $ELAPSED, \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > "$TRIAL_DIR/meta.json"
+    STATUS="ok"
+    [ "$CLAUDE_EXIT" -ne 0 ] && STATUS="failed"
+
+    # The `result` event holds the authoritative usage/cost totals the evaluator
+    # needs. Verify it was actually written; surface it loudly if it wasn't.
+    RESULT_CAPTURED="true"
+    if ! grep -q '"type":"result"' "$TRIAL_DIR/log.jsonl"; then
+      RESULT_CAPTURED="false"
+    fi
+
+    echo "{\"app\": \"$app\", \"trial\": \"$TRIAL_NUM\", \"variant\": \"$variant\", \"model\": \"$MODEL\", \"max_turns\": $MAX_TURNS, \"duration_seconds\": $ELAPSED, \"exit_code\": $CLAUDE_EXIT, \"status\": \"$STATUS\", \"result_captured\": $RESULT_CAPTURED, \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > "$TRIAL_DIR/meta.json"
 
     echo ""
-    echo "==> $app / $TRIAL_NUM / $variant complete in ${MINUTES}m ${SECONDS}s. Output in $OUTPUT_DIR"
+    if [ "$STATUS" = "failed" ]; then
+      echo "==> WARNING: $app / $TRIAL_NUM / $variant FAILED (exit $CLAUDE_EXIT) after ${MINUTES}m ${SECONDS}s. See $TRIAL_DIR/log.jsonl"
+    else
+      echo "==> $app / $TRIAL_NUM / $variant complete in ${MINUTES}m ${SECONDS}s. Output in $OUTPUT_DIR"
+    fi
+    if [ "$RESULT_CAPTURED" = "false" ]; then
+      echo "==> WARNING: no \`result\` event in $TRIAL_DIR/log.jsonl — usage/cost totals will be missing. See $TRIAL_DIR/stderr.log"
+    fi
     echo ""
   done
 done

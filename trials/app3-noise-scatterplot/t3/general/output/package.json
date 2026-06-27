@@ -1,0 +1,22 @@
+{
+  "name": "manhattan-noisescape-scatterplot",
+  "version": "1.0.0",
+  "description": "Fully browser-side 3D map of Manhattan buildings colored by the number of 311 noise complaints within a 500 m radius, with an interactive noise-vs-area scatterplot whose brush highlights buildings on the map.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@deck.gl/core": "^9.0.27",
+    "@deck.gl/layers": "^9.0.27",
+    "@deck.gl/mapbox": "^9.0.27",
+    "maplibre-gl": "^4.7.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
+  }
+}

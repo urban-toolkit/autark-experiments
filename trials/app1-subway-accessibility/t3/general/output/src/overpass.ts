@@ -5,10 +5,13 @@ import type {
   PolygonFeature,
 } from "./types";
 
-// Manhattan borough administrative relation 8398124 -> Overpass area id.
+// Manhattan borough administrative relation 8398124 -> Overpass area id
+// (3600000000 + relation id). Querying by this area keeps results inside the
+// island boundary rather than a loose bounding box.
 const MANHATTAN_AREA_ID = 3608398124;
 
-// Public Overpass mirrors tried in order, with backoff, until one succeeds.
+// Public Overpass mirrors, tried in rotation with exponential backoff so a
+// single overloaded server (429/504) does not sink the whole load.
 const OVERPASS_ENDPOINTS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
@@ -18,17 +21,16 @@ const OVERPASS_ENDPOINTS = [
 const CACHE_KEY = "manhattan-osm-layers-v1";
 
 /**
- * A single combined Overpass query for every base layer we need. Keeping it to
- * one request minimises the chance of hitting the Overpass rate limit (429).
- * `out geom` returns inline node coordinates so we never have to assemble
- * way/node references ourselves.
+ * One combined Overpass query for every base layer. A single request is the
+ * most reliable way to stay under the Overpass rate limit. `out geom;` inlines
+ * each way's node coordinates so we never resolve node references ourselves.
  */
 function buildQuery(): string {
   return `[out:json][timeout:240];
 area(${MANHATTAN_AREA_ID})->.man;
 (
   way["building"](area.man);
-  way["highway"]["highway"!~"^(footway|path|steps|cycleway|corridor|elevator|construction)$"](area.man);
+  way["highway"]["highway"!~"^(footway|path|steps|cycleway|corridor|elevator|construction|proposed)$"](area.man);
   way["leisure"="park"](area.man);
   way["landuse"~"^(grass|recreation_ground|cemetery|forest|meadow)$"](area.man);
   way["natural"~"^(water|wood|scrub)$"](area.man);
@@ -49,28 +51,30 @@ interface OverpassElement {
 }
 
 /**
- * Returns the Manhattan OSM base layers, served from the IndexedDB cache when
- * available, otherwise fetched from Overpass and cached for next time.
+ * Returns the Manhattan OSM base layers — served from the IndexedDB cache when
+ * present, otherwise fetched from Overpass once and cached for next time.
  */
 export async function loadOsmLayers(
   onStatus: (msg: string) => void
 ): Promise<OsmLayers> {
+  console.log("[overpass] Loading OSM layers for Manhattan...");
+
   const cached = await readCache();
   if (cached) {
-    console.log("[overpass] Loaded OSM layers from IndexedDB cache");
+    console.log("[overpass] OSM layers restored from IndexedDB cache");
     onStatus("Loaded OSM layers from local cache");
     logLayerCounts(cached);
     return cached;
   }
 
-  console.log("[overpass] No cache found — fetching from Overpass API ...");
+  console.log("[overpass] No cache present — fetching from Overpass API...");
   const raw = await fetchOverpass(onStatus);
   const layers = convertElements(raw.elements ?? []);
   logLayerCounts(layers);
 
   try {
     await writeCache(layers);
-    console.log("[overpass] Cached OSM layers in IndexedDB for next load");
+    console.log("[overpass] OSM layers cached in IndexedDB for next load");
   } catch (err) {
     console.warn("[overpass] Could not cache OSM layers:", err);
   }
@@ -83,13 +87,15 @@ async function fetchOverpass(
   const body = "data=" + encodeURIComponent(buildQuery());
   let lastErr: unknown;
 
-  for (let attempt = 0; attempt < OVERPASS_ENDPOINTS.length * 2; attempt++) {
+  // Two full passes over the mirror list, backing off between attempts.
+  const maxAttempts = OVERPASS_ENDPOINTS.length * 2;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const endpoint = OVERPASS_ENDPOINTS[attempt % OVERPASS_ENDPOINTS.length];
     try {
       console.log(
-        `[overpass] Fetching Overpass API (attempt ${attempt + 1}) via ${endpoint}`
+        `[overpass] Fetching Overpass API (attempt ${attempt + 1}/${maxAttempts}) via ${endpoint}`
       );
-      onStatus(`Querying OpenStreetMap (Overpass)…`);
+      onStatus("Querying OpenStreetMap (Overpass)…");
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -135,6 +141,7 @@ function convertElements(elements: OverpassElement[]): OsmLayers {
     const tags = el.tags ?? {};
     const coords = el.geometry.map((n) => [n.lon, n.lat]);
 
+    // Roads stay as open polylines.
     if (tags.highway) {
       roads.push({
         type: "Feature",
@@ -144,7 +151,7 @@ function convertElements(elements: OverpassElement[]): OsmLayers {
       continue;
     }
 
-    // Everything else is an area: close the ring if needed.
+    // Everything else is an area; close its ring if Overpass left it open.
     const ring = closeRing(coords);
     if (ring.length < 4) continue;
 
@@ -160,10 +167,7 @@ function convertElements(elements: OverpassElement[]): OsmLayers {
           stationCount: 0,
         },
       });
-    } else if (
-      tags.natural === "water" ||
-      tags.waterway === "riverbank"
-    ) {
+    } else if (tags.natural === "water" || tags.waterway === "riverbank") {
       water.push(polygon(el.id, ring, "water", tags.name));
     } else {
       parks.push(polygon(el.id, ring, "park", tags.name));
@@ -219,25 +223,17 @@ function parseHeight(tags: Record<string, string>): number {
 }
 
 function logLayerCounts(layers: OsmLayers): void {
-  console.log(
-    `[overpass] OSM buildings loaded: ${layers.buildings.features.length} features`
-  );
-  console.log(
-    `[overpass] OSM roads loaded: ${layers.roads.features.length} features`
-  );
-  console.log(
-    `[overpass] OSM parks loaded: ${layers.parks.features.length} features`
-  );
-  console.log(
-    `[overpass] OSM water loaded: ${layers.water.features.length} features`
-  );
+  console.log(`[overpass] OSM buildings loaded: ${layers.buildings.features.length} features`);
+  console.log(`[overpass] OSM roads loaded: ${layers.roads.features.length} features`);
+  console.log(`[overpass] OSM parks loaded: ${layers.parks.features.length} features`);
+  console.log(`[overpass] OSM water loaded: ${layers.water.features.length} features`);
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// --- Tiny IndexedDB key/value cache (avoids re-hammering Overpass) ----------
+// --- Minimal IndexedDB key/value cache (avoids re-hammering Overpass) -------
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

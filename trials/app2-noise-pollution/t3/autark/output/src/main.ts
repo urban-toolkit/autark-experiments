@@ -5,26 +5,33 @@ import type { Feature } from "geojson";
 // ─────────────────────────────────────────────────────────────────────────────
 // Manhattan Noisescape
 //
-// Fully browser-side urban visual-analytics app built with the Autark toolkit.
-//   1. autk-db loads OSM base layers for Manhattan Island (surface, parks,
-//      water, roads, buildings) straight from the Overpass API.
-//   2. autk-db loads the NYC 311 noise-complaint CSV as a spatial point table.
-//   3. A spatial join counts how many noise events fall within 500 m of every
-//      building (centroid-to-point NEAR predicate).
-//   4. autk-map renders a 3D city where building color encodes that count.
-//   5. Every layer is pickable — clicking a feature highlights it.
+// A fully browser-side urban visual-analytics application built with Autark:
 //
-// All major steps are logged to the browser console.
+//   1. autk-db loads the OSM base layers for Manhattan Island (surface, parks,
+//      water, roads, buildings) directly from the Overpass API.
+//   2. autk-db loads the NYC 311 noise-complaint CSV as a spatial point table.
+//   3. A spatial join (NEAR, 500 m) counts how many noise events fall within
+//      500 m of every building.
+//   4. autk-map renders a 3D city where building color encodes that count.
+//   5. Every layer is pickable — clicking a feature changes its color.
+//
+// There is no backend: DuckDB-WASM runs the queries and WebGPU renders the map.
+// All major operations are logged to the browser console.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const statusEl = document.getElementById("status")!;
 const loadingEl = document.getElementById("loading")!;
 const hudEl = document.getElementById("hud")!;
 
+// Distance threshold for the proximity join, in meters.
 const NOISE_RADIUS_METERS = 500;
-// EPSG:3395 (World Mercator, meters) is used for both OSM and CSV so that the
-// 500 m NEAR distance in the spatial join is expressed in real meters.
+
+// EPSG:3395 (World Mercator, meters) is used for BOTH the OSM layers and the CSV
+// points, so the 500 m NEAR distance in the spatial join is expressed in real
+// meters (ST_Distance operates in the native units of the projection).
 const COORDINATE_FORMAT = "EPSG:3395";
+
+// The CSV is served as a static asset from /public/data/noise.csv.
 const NOISE_CSV_URL = `${window.location.origin}/data/noise.csv`;
 
 function setStatus(msg: string) {
@@ -37,15 +44,17 @@ async function main() {
   try {
     // ── 1. Initialize the in-browser spatial database ─────────────────────────
     setStatus("Initializing DuckDB-WASM spatial database…");
+    console.log("Initializing autk-db (DuckDB-WASM)…");
     const db = new SpatialDb();
     await db.init();
     console.log("Database initialized");
 
     // ── 2. Load OSM base layers for Manhattan Island ──────────────────────────
     setStatus("Loading OSM layers for Manhattan Island… (this can take a minute)");
-    console.log("Loading OSM layers from Overpass API…");
+    console.log("Loading OSM layers from the Overpass API…");
     await db.loadOsmFromOverpassApi({
-      // IMPORTANT: only 'Manhattan Island' keeps the data inside the island.
+      // IMPORTANT: only 'Manhattan Island' keeps the data clipped to the island
+      // (broader areas like 'Manhattan' or 'New York' would leak off-island).
       queryArea: {
         geocodeArea: "New York",
         areas: ["Manhattan Island"],
@@ -67,12 +76,15 @@ async function main() {
       console.log(`Layer table ready: ${lt.name} (type: ${lt.type})`);
     }
 
-    // ── 3. Load the NYC 311 noise-complaint CSV ───────────────────────────────
+    // ── 3. Load the NYC 311 noise-complaint CSV as a spatial point table ───────
     setStatus("Loading noise-complaint CSV…");
     console.log(`Fetching noise CSV from ${NOISE_CSV_URL}`);
     const noiseTable = await db.loadCsv({
       csvFileUrl: NOISE_CSV_URL,
       outputTableName: "noise",
+      // Build a geoPoint geometry column from the lat/long columns so the table
+      // can take part in the spatial join. Project to the same CRS as the OSM
+      // layers so distances are comparable.
       geometryColumns: {
         latColumnName: "Latitude",
         longColumnName: "Longitude",
@@ -85,8 +97,12 @@ async function main() {
     );
 
     // ── 4. Spatial join: count noise events within 500 m of each building ─────
-    setStatus(`Counting noise events within ${NOISE_RADIUS_METERS} m of each building…`);
-    console.log("Spatial join started (buildings ⟵ noise, NEAR 500 m)…");
+    setStatus(
+      `Counting noise events within ${NOISE_RADIUS_METERS} m of each building…`
+    );
+    console.log(
+      `Spatial join started (osm_buildings ⟵ noise, NEAR ${NOISE_RADIUS_METERS} m)…`
+    );
     await db.spatialJoin({
       tableRootName: "osm_buildings",
       tableJoinName: "noise",
@@ -94,6 +110,7 @@ async function main() {
       spatialPredicate: "NEAR",
       joinType: "LEFT",
       nearDistance: NOISE_RADIUS_METERS,
+      // Measure from each building centroid to each noise point.
       nearUseCentroid: true,
       groupBy: {
         selectColumns: [
@@ -102,6 +119,7 @@ async function main() {
             column: "Unique Key",
             aggregateFn: "count",
             aggregateFnResultColumnName: "noise_count",
+            // Adds noise_count_norm (0–1) for direct color mapping.
             normalize: true,
           },
         ],
@@ -109,14 +127,15 @@ async function main() {
     });
     console.log("Spatial join complete");
 
-    // ── 5. Initialize the 3D map renderer ─────────────────────────────────────
+    // ── 5. Initialize the 3D map renderer (WebGPU) ────────────────────────────
     setStatus("Initializing 3D map renderer…");
+    console.log("Initializing autk-map (WebGPU)…");
     const canvas = document.getElementById("map-canvas") as HTMLCanvasElement;
     const map = new AutkMap(canvas, true);
     await map.init();
-    console.log("Map renderer initialized (WebGPU)");
+    console.log("Map renderer initialized");
 
-    // ── 6. Load every layer onto the map (draw order matters: bottom → top) ───
+    // ── 6. Load every layer onto the map (draw order: bottom → top) ───────────
     setStatus("Loading layers onto the map…");
     const layerOrder: [string, LayerType][] = [
       ["surface", LayerType.AUTK_OSM_SURFACE],
@@ -137,21 +156,21 @@ async function main() {
     setStatus("Applying noise thematic coloring to buildings…");
     const buildingsGeojson = await db.getLayer("osm_buildings");
 
-    // Quick diagnostics: how many buildings actually have noise nearby?
+    // Diagnostics: how many buildings actually have noise events nearby?
     let matched = 0;
     let maxCount = 0;
     for (const f of buildingsGeojson.features) {
-      const c =
-        (f.properties as Record<string, unknown> | null)?.["sjoin"] != null
-          ? ((f.properties!["sjoin"] as Record<string, Record<string, number>>)
-              ?.count?.noise_count ?? 0)
-          : 0;
+      const sjoin = (f.properties as Record<string, unknown> | null)?.[
+        "sjoin"
+      ] as Record<string, Record<string, number>> | undefined;
+      const c = sjoin?.count?.noise_count ?? 0;
       if (c > 0) matched++;
       if (c > maxCount) maxCount = c;
     }
     console.log(
       `Spatial join matched ${matched} / ${buildingsGeojson.features.length} ` +
-        `buildings with ≥1 nearby noise event (max ${maxCount} within ${NOISE_RADIUS_METERS} m)`
+        `buildings with ≥1 nearby noise event ` +
+        `(max ${maxCount} within ${NOISE_RADIUS_METERS} m)`
     );
 
     map.updateRenderInfoProperty(
@@ -165,7 +184,8 @@ async function main() {
       "More noise complaints",
     ]);
 
-    // groupById=true so each building takes a single value (not face-by-face).
+    // groupById=true so each building is colored by its single value (one count
+    // per building) rather than face-by-face.
     map.updateGeoJsonLayerThematic(
       "buildings",
       buildingsGeojson,
@@ -179,7 +199,7 @@ async function main() {
     );
     console.log("Thematic coloring applied to buildings");
 
-    // ── 8. Enable picking on every layer (highlights the clicked feature) ─────
+    // ── 8. Enable picking on every layer (color changes on click) ─────────────
     const pickableLayers = ["surface", "parks", "water", "roads", "buildings"];
     for (const layerName of pickableLayers) {
       map.updateRenderInfoProperty(layerName, "isPick", true);
@@ -199,7 +219,7 @@ async function main() {
         }
       }
     );
-    console.log("Pick event listener registered for all layers");
+    console.log("Pick event listener registered for all 5 layers");
 
     // ── 9. Start the render loop ──────────────────────────────────────────────
     map.draw(60);

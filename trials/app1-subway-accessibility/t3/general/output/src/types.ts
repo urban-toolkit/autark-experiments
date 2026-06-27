@@ -1,5 +1,6 @@
 // Shared types for the Manhattan subway-accessibility application.
 
+/** A single subway station parsed from the NYC Open Data CSV. */
 export interface SubwayStation {
   name: string;
   routes: string;
@@ -7,7 +8,7 @@ export interface SubwayStation {
   lat: number;
 }
 
-/** A GeoJSON-style polygon feature for buildings, parks and water bodies. */
+/** GeoJSON-style polygon feature used for buildings, parks and water. */
 export interface PolygonFeature {
   type: "Feature";
   geometry: {
@@ -25,7 +26,7 @@ export interface PolygonFeature {
   };
 }
 
-/** A GeoJSON-style line feature for roads. */
+/** GeoJSON-style line feature used for roads. */
 export interface LineFeature {
   type: "Feature";
   geometry: {
@@ -44,6 +45,7 @@ export interface FeatureCollection<F> {
   features: F[];
 }
 
+/** The four OSM base layers we fetch and render. */
 export interface OsmLayers {
   buildings: FeatureCollection<PolygonFeature>;
   parks: FeatureCollection<PolygonFeature>;

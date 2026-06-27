@@ -1,20 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manhattan Noisescape</title>
+    <title>Manhattan Noisescape (3D)</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
     <style>
       html,
       body {
         margin: 0;
         padding: 0;
-        width: 100%;
         height: 100%;
-        overflow: hidden;
-        background: #0b0e14;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: #e6e6e6;
+        background: #0b0e14;
+        color: #e8e8e8;
+        overflow: hidden;
       }
       #map {
         position: absolute;
@@ -25,85 +25,108 @@
         top: 16px;
         left: 16px;
         z-index: 10;
-        background: rgba(15, 19, 28, 0.85);
-        backdrop-filter: blur(6px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(16, 20, 28, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         padding: 14px 16px;
         max-width: 320px;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
       }
       #panel h1 {
-        font-size: 16px;
-        margin: 0 0 4px;
-        font-weight: 650;
+        font-size: 15px;
+        margin: 0 0 6px;
+        font-weight: 600;
       }
       #panel p {
         font-size: 12px;
         line-height: 1.4;
-        margin: 4px 0;
-        color: #aab2c0;
+        margin: 0 0 10px;
+        color: #b9c0cc;
       }
       #status {
         font-size: 12px;
-        color: #7fd1ff;
-        margin-top: 8px;
+        color: #8fd3ff;
         min-height: 16px;
       }
       #legend {
-        margin-top: 10px;
+        margin-top: 12px;
       }
-      #legend .bar {
+      .legend-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #9aa3b2;
+        margin-bottom: 6px;
+      }
+      .legend-bar {
         height: 12px;
-        border-radius: 4px;
+        border-radius: 3px;
         background: linear-gradient(
           to right,
-          rgb(255, 255, 204),
-          rgb(254, 178, 76),
-          rgb(240, 59, 32),
-          rgb(128, 0, 38)
+          rgb(12, 7, 35),
+          rgb(84, 15, 109),
+          rgb(165, 44, 96),
+          rgb(231, 99, 49),
+          rgb(252, 200, 70)
         );
       }
-      #legend .labels {
+      .legend-labels {
         display: flex;
         justify-content: space-between;
+        font-size: 10px;
+        color: #9aa3b2;
+        margin-top: 3px;
+      }
+      .hint {
         font-size: 11px;
-        color: #aab2c0;
-        margin-top: 2px;
+        color: #9aa3b2;
+        margin-top: 10px;
+      }
+      .hint b {
+        color: #00e5ff;
       }
       #tooltip {
         position: absolute;
         z-index: 20;
         pointer-events: none;
-        background: rgba(15, 19, 28, 0.95);
+        background: rgba(16, 20, 28, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 6px;
-        padding: 6px 8px;
+        padding: 6px 9px;
         font-size: 12px;
-        max-width: 260px;
         display: none;
-        color: #e6e6e6;
-      }
-      .selrow {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #ffd479;
-        min-height: 16px;
+        max-width: 240px;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CvBJZC1m.js"></script>
+    <script type="module" crossorigin src="/assets/index-BzgVxiaf.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CuCRB34y.css">
   </head>
   <body>
     <div id="map"></div>
     <div id="panel">
-      <h1>Manhattan Noisescape</h1>
-      <p>3D buildings colored by the number of 311 noise complaints within 500&nbsp;m. Click any element (building, road, park, water, surface) to highlight it.</p>
-      <div id="legend">
-        <div class="bar"></div>
-        <div class="labels"><span id="legend-min">0</span><span>noise complaints &le;500&nbsp;m</span><span id="legend-max">max</span></div>
+      <h1>Manhattan · Noisescape</h1>
+      <p>
+        Each building is extruded in 3D and colored by the number of
+        <strong>311 noise complaints</strong> within a
+        <strong>500&nbsp;m</strong> radius of its footprint. Base layers:
+        OpenStreetMap (Overpass). Noise: NYC Open Data 311.
+      </p>
+      <div id="status">Initializing…</div>
+      <div id="legend" style="display: none">
+        <div class="legend-title">Noise events within 500 m</div>
+        <div class="legend-bar"></div>
+        <div class="legend-labels">
+          <span>0</span>
+          <span id="legend-mid">—</span>
+          <span id="legend-max">—</span>
+        </div>
       </div>
-      <div id="status">Booting…</div>
-      <div class="selrow" id="selrow"></div>
+      <div class="hint">
+        Click any element (surface, water, park, road, building) to
+        <b>select</b> it — selected elements turn cyan. Click again to
+        deselect.
+      </div>
     </div>
     <div id="tooltip"></div>
   </body>

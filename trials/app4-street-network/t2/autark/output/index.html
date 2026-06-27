@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manhattan Street Network — Road Segment Analysis</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #11131a; }
+    canvas { width: 100%; height: 100%; display: block; }
+
+    #loading {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #e8e8ec; font-family: system-ui, sans-serif; font-size: 1.2rem;
+      text-align: center; z-index: 20; pointer-events: none;
+    }
+    #loading .phase { margin-top: 0.6rem; font-size: 0.9rem; color: #9aa0ad; }
+
+    #panel {
+      position: absolute; top: 16px; left: 16px; z-index: 10;
+      background: rgba(20, 22, 30, 0.88); color: #e8e8ec;
+      font-family: system-ui, sans-serif; padding: 14px 16px;
+      border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+      width: 240px; backdrop-filter: blur(6px);
+    }
+    #panel h1 { font-size: 0.95rem; margin-bottom: 4px; }
+    #panel .sub { font-size: 0.72rem; color: #9aa0ad; margin-bottom: 12px; }
+    #panel .label { font-size: 0.72rem; color: #9aa0ad; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+
+    .toggle { display: flex; gap: 6px; margin-bottom: 12px; }
+    .toggle button {
+      flex: 1; padding: 8px 6px; font-size: 0.78rem; cursor: pointer;
+      border: 1px solid #3a3f4d; background: #1c1f29; color: #cfd3dc;
+      border-radius: 6px; transition: all 0.15s;
+    }
+    .toggle button:hover { border-color: #5a627a; }
+    .toggle button.active { background: #3b6fe0; border-color: #3b6fe0; color: #fff; }
+
+    #legend { font-size: 0.72rem; color: #cfd3dc; }
+    #legend .bar { height: 10px; border-radius: 4px; margin: 6px 0 4px; }
+    #legend .ends { display: flex; justify-content: space-between; color: #9aa0ad; }
+    #hint { margin-top: 12px; font-size: 0.68rem; color: #80879a; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div>Loading Manhattan Street Network…</div>
+    <div class="phase" id="phase">Initializing…</div>
+  </div>
+
+  <div id="panel" style="display:none">
+    <h1>Manhattan Street Network</h1>
+    <div class="sub">Road segments by length or nearby noise events</div>
+
+    <div class="label">Color roads by</div>
+    <div class="toggle">
+      <button id="btn-length" class="active">Length</button>
+      <button id="btn-noise">Noise (10&nbsp;m)</button>
+    </div>
+
+    <div id="legend">
+      <div class="label" id="legend-title">Segment length</div>
+      <div class="bar" id="legend-bar"></div>
+      <div class="ends"><span id="legend-min">0</span><span id="legend-max">—</span></div>
+    </div>
+
+    <div id="hint">Click any road, park, water body, or surface to highlight it.</div>
+  </div>
+
+  <canvas id="map-canvas"></canvas>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

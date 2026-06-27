@@ -1,39 +1,48 @@
-# Manhattan — Subway Accessibility (3D Map)
+# Manhattan Buildings — Subway Accessibility (3D)
 
-A **fully browser-side** web application (no backend) that renders a **3D map of
+A **fully browser-side** (no backend) web application that renders a **3D map of
 Manhattan buildings**, where each building is colored by the **number of subway
 stations within a 500-meter radius** of its footprint.
 
-![Stations within 500 m: blue (few) → red (many)](https://img.shields.io/badge/legend-0%E2%86%92max%20stations-blue?style=flat-square)
+Everything — fetching OpenStreetMap data, parsing the subway CSV, the spatial
+join, and the 3D rendering — happens in the browser. There is no server-side
+code: the only "server" is Vite's static dev/preview server.
+
+![pipeline](https://img.shields.io/badge/pipeline-browser--side-blue)
 
 ---
 
 ## What it does
 
-1. **Loads OpenStreetMap base layers for Manhattan** (surface, parks, water,
-   roads, buildings) from the **Overpass API** in a single combined query,
-   scoped to the Manhattan borough boundary (`area 3608398124`). The response is
-   cached in **IndexedDB** so subsequent loads are instant and don't re-hit
-   Overpass.
-2. **Loads subway-station data** from `public/subway_manhattan_clean.csv`
-   (NYC Open Data, MTA subway stations), parsed entirely in the browser.
-3. **Counts, for every building, how many subway stations fall within 500 m** of
-   the building-footprint centroid. Stations are bucketed into a ~500 m spatial
-   grid so each building only tests nearby stations (equirectangular distance).
-4. **Renders a 3D map** with [MapLibre GL JS](https://maplibre.org/) +
-   [deck.gl](https://deck.gl/): buildings are extruded by their OSM height and
-   colored by station proximity (blue = few, red = many). Hover a building for
-   its name, station count and height.
-5. Every major step is logged to the **browser console** (data loading, Overpass
-   request/response sizes, the spatial join, and rendering milestones).
+1. **Loads the subway stations** from `public/subway_manhattan_clean.csv`
+   (NYC Open Data), parsing the `GTFS Latitude` / `GTFS Longitude` columns.
+2. **Loads OpenStreetMap base layers** for Manhattan via the **Overpass API** —
+   buildings, roads, parks and water — in a *single* combined query (to respect
+   Overpass rate limits) scoped to the **Manhattan Island** administrative area.
+   The result is cached in **IndexedDB**, so subsequent loads are instant and do
+   not re-hit Overpass.
+3. **Counts stations within 500 m** of every building footprint centroid using a
+   uniform spatial grid (each building only checks its 9 neighbouring cells) and
+   an equirectangular distance approximation.
+4. **Renders a 3D map** with [MapLibre GL](https://maplibre.org/) +
+   [deck.gl](https://deck.gl/): extruded buildings colored on a perceptually
+   uniform **Viridis** ramp (dark purple = few nearby stations, bright yellow =
+   many), plus water, parks, roads and subway-station markers.
+5. Hovering a building shows its name, height, and station count; hovering a
+   station shows its name and routes.
+
+All major steps log progress to the **browser console** (`[main]`, `[subway]`,
+`[overpass]`, `[spatial]`, `[render]` prefixes) so the full pipeline can be
+traced and diagnosed from the console alone.
 
 ---
 
 ## Requirements
 
-- **Node.js ≥ 18** and **npm**
-- A modern browser with WebGL2 (Chrome, Edge, Firefox, Safari)
-- Internet access on first run (to query the Overpass API; cached afterwards)
+- **Node.js 18+** and **npm**
+- A modern browser with WebGL2 (Chrome, Firefox, Edge, Safari)
+- Internet access on first run (to reach the Overpass API). After the first
+  successful load the OSM data is cached locally in IndexedDB.
 
 ---
 
@@ -47,16 +56,25 @@ npm install
 npm run dev
 ```
 
-Then open **http://localhost:3005** in your browser and open the developer
-console (F12) to follow the progress logs. The first load fetches Manhattan from
-Overpass (this can take 30–90 s depending on Overpass load and is cached
-afterward — watch the status box in the top-left and the console).
+Then open **http://localhost:3005** in your browser. The status line in the
+top-left panel reports progress; open the developer console to watch the full
+log. The very first load fetches Manhattan from Overpass (this can take 10–60 s
+depending on mirror load); later loads read from the IndexedDB cache.
 
-### Production build
+### Production build & preview
 
 ```bash
-npm run build      # type-checks (tsc --noEmit) then builds with Vite
-npm run preview    # serves the production build on http://localhost:3005
+# Type-check + bundle into dist/
+npm run build
+
+# Serve the production build on http://localhost:3005
+npm run preview
+```
+
+### Type-check only
+
+```bash
+npm run typecheck
 ```
 
 ---
@@ -64,62 +82,43 @@ npm run preview    # serves the production build on http://localhost:3005
 ## How it works (architecture)
 
 ```
-public/subway_manhattan_clean.csv ──► src/subway.ts   (CSV → stations[])
-Overpass API  ───────────────────────► src/overpass.ts (OSM → GeoJSON layers, IndexedDB cache)
-                                              │
-                       stations[] + layers ──► src/spatial.ts (500 m count per building)
-                                              │
-                                   layers ───► src/render.ts (MapLibre + deck.gl 3D scene)
-                                              │
-                                        src/main.ts (orchestration + status/legend)
+public/subway_manhattan_clean.csv   NYC Open Data subway stations (input)
+
+src/
+  main.ts        Orchestrates the pipeline + status/legend UI
+  subway.ts      Fetches & parses the subway CSV (quoted-field CSV parser)
+  overpass.ts    Single combined Overpass query + IndexedDB cache + backoff
+  spatial.ts     Grid-accelerated "stations within 500 m" count per building
+  render.ts      MapLibre base map + deck.gl layers (3D extruded buildings)
+  types.ts       Shared GeoJSON / domain types
 ```
 
-| File | Responsibility |
-| --- | --- |
-| `src/main.ts` | Orchestrates the pipeline and updates the status/legend UI. |
-| `src/subway.ts` | Fetches and parses the subway-station CSV. |
-| `src/overpass.ts` | Builds the combined Overpass query, fetches with multi-mirror retry + exponential backoff, converts elements to GeoJSON, caches in IndexedDB. |
-| `src/spatial.ts` | Grid-accelerated "stations within 500 m" count per building. |
-| `src/render.ts` | MapLibre base map + deck.gl `GeoJsonLayer`s (water, parks, roads, extruded/colored buildings) + hover tooltip. |
-| `src/types.ts` | Shared TypeScript types. |
+### Notes & design decisions
 
-### Overpass / rate-limit handling
-
-- A **single** combined query fetches buildings, roads, parks and water to
-  minimize the number of requests.
-- Results are **cached in IndexedDB** (`manhattan-osm-layers-v1`); clearing site
-  data forces a re-fetch.
-- On HTTP **429/504** or network failure, the app rotates through several
-  Overpass mirrors with **exponential backoff** (2s → 20s).
-
-### Color encoding
-
-Buildings use a sequential ramp over `[0 … max]` stations within 500 m:
-
-```
-0 ──────────────────────────────► max
-blue → teal → yellow → orange → red
-```
-
-The legend in the top-left shows the live `0 / mid / max` domain.
+- **One Overpass query, with backoff.** Buildings, roads, parks and water are
+  fetched in a single request to minimise the chance of an HTTP 429. The fetch
+  rotates across three public Overpass mirrors with exponential backoff and
+  retries on 429/504.
+- **Manhattan Island scope.** The query uses the Manhattan borough
+  administrative area (`area(3608398124)`) so results stay on the island rather
+  than spilling into a loose bounding box.
+- **IndexedDB cache.** The converted layers are stored under the key
+  `manhattan-osm-layers-v1`. To force a fresh fetch, clear the site's IndexedDB
+  (DevTools → Application → IndexedDB → `manhattan-subway`) and reload.
+- **500 m counting.** Distances are measured from each building's footprint
+  centroid using an equirectangular approximation (sub-metre accurate at this
+  scale and latitude). A ~500 m grid keeps the join near-linear.
+- **Color encoding.** Building fill color maps `stationCount / max` through a
+  Viridis ramp; the legend shows the `0 … mid … max` domain.
 
 ---
 
-## Data sources
+## Tech stack
 
-- **Buildings / roads / parks / water:** © OpenStreetMap contributors (ODbL),
-  via the [Overpass API](https://overpass-api.de/).
-- **Subway stations:** [NYC Open Data](https://opendata.cityofnewyork.us/) — MTA
-  subway stations (`subway_manhattan_clean.csv`, included in `public/`).
-
----
-
-## Troubleshooting
-
-- **"Overpass busy — retrying…" for a long time:** the public Overpass servers
-  are occasionally overloaded. The app retries across mirrors automatically;
-  just wait, or reload to retry. Once a successful response is cached, reloads
-  are instant.
-- **Blank map but no errors:** make sure WebGL2 is enabled in your browser.
-- **Force a fresh OSM fetch:** clear the site's IndexedDB (DevTools → Application
-  → IndexedDB → `manhattan-subway`).
+- [Vite](https://vitejs.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [MapLibre GL JS](https://maplibre.org/) (base map / camera)
+- [deck.gl](https://deck.gl/) `@deck.gl/mapbox`, `@deck.gl/layers`,
+  `@deck.gl/core` (3D layers via `MapboxOverlay`)
+- Data: [NYC Open Data](https://opendata.cityofnewyork.us/) (subway stations) +
+  [OpenStreetMap](https://www.openstreetmap.org/) via the
+  [Overpass API](https://overpass-api.de/)

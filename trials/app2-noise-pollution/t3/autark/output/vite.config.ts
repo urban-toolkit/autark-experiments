@@ -1,8 +1,8 @@
 import { ViteDevServer, defineConfig } from 'vite';
 
-// autk-db and autk-map ship as pre-built ESM bundles. Vite's dependency
-// optimizer must not pre-bundle them (they contain WASM + web workers), and the
-// dev-server file watcher must still watch them inside node_modules.
+// autk-db and autk-map ship as pre-built ESM bundles that contain WASM and web
+// workers. Vite's dependency optimizer must NOT pre-bundle them, but the dev
+// server watcher should still watch them inside node_modules.
 export function pluginWatchNodeModules(modules: string[]) {
   const pattern = `/node_modules\\/(?!${modules.join('|')}).*/`;
   return {

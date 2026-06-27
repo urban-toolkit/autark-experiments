@@ -31,7 +31,7 @@ async function main(): Promise<void> {
 
     // 4. Render the 3D scene.
     setStatus("Rendering 3D map…");
-    renderMap(layers, max);
+    renderMap(layers, stations, max);
 
     // 5. Legend.
     updateLegend(max);

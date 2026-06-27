@@ -4,8 +4,9 @@
   "variant": "general",
   "model": "opus",
   "max_turns": 150,
-  "duration_seconds": 1356,
+  "duration_seconds": 380,
   "exit_code": 0,
   "status": "ok",
-  "timestamp": "2026-06-12T13:21:56Z"
+  "result_captured": true,
+  "timestamp": "2026-06-14T17:51:39Z"
 }

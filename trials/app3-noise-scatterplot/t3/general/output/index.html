@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manhattan Noisescape · Scatterplot</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0b0e14;
+        color: #e8e8e8;
+        overflow: hidden;
+      }
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+      #panel {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        background: rgba(16, 20, 28, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 14px 16px;
+        max-width: 320px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+      }
+      #panel h1 {
+        font-size: 15px;
+        margin: 0 0 6px;
+        font-weight: 600;
+      }
+      #panel p {
+        font-size: 12px;
+        line-height: 1.4;
+        margin: 0 0 10px;
+        color: #b9c0cc;
+      }
+      #status {
+        font-size: 12px;
+        color: #8fd3ff;
+        min-height: 16px;
+      }
+      #legend {
+        margin-top: 12px;
+      }
+      .legend-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #9aa3b2;
+        margin-bottom: 6px;
+      }
+      .legend-bar {
+        height: 12px;
+        border-radius: 3px;
+        background: linear-gradient(
+          to right,
+          rgb(12, 7, 35),
+          rgb(84, 15, 109),
+          rgb(165, 44, 96),
+          rgb(231, 99, 49),
+          rgb(252, 200, 70)
+        );
+      }
+      .legend-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #9aa3b2;
+        margin-top: 3px;
+      }
+      .hint {
+        font-size: 11px;
+        color: #9aa3b2;
+        margin-top: 10px;
+      }
+      .hint b {
+        color: #00e5ff;
+      }
+      #tooltip {
+        position: absolute;
+        z-index: 20;
+        pointer-events: none;
+        background: rgba(16, 20, 28, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 6px;
+        padding: 6px 9px;
+        font-size: 12px;
+        display: none;
+        max-width: 240px;
+      }
+      /* Interactive scatterplot, bottom-right. */
+      #scatter {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        z-index: 10;
+        background: rgba(16, 20, 28, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 12px 14px 10px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+        user-select: none;
+      }
+      #scatter h2 {
+        font-size: 13px;
+        margin: 0 0 2px;
+        font-weight: 600;
+      }
+      #scatter .sub {
+        font-size: 11px;
+        color: #9aa3b2;
+        margin: 0 0 8px;
+      }
+      #scatter-canvas {
+        display: block;
+        cursor: crosshair;
+        border-radius: 4px;
+      }
+      #scatter-info {
+        font-size: 11px;
+        color: #8fd3ff;
+        margin-top: 6px;
+        min-height: 15px;
+      }
+      #scatter-info b {
+        color: #ff5bd1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="panel">
+      <h1>Manhattan · Noisescape</h1>
+      <p>
+        Each building is extruded in 3D and colored by the number of
+        <strong>311 noise complaints</strong> within a
+        <strong>500&nbsp;m</strong> radius of its footprint. Base layers:
+        OpenStreetMap (Overpass). Noise: NYC Open Data 311.
+      </p>
+      <div id="status">Initializing…</div>
+      <div id="legend" style="display: none">
+        <div class="legend-title">Noise events within 500 m</div>
+        <div class="legend-bar"></div>
+        <div class="legend-labels">
+          <span>0</span>
+          <span id="legend-mid">—</span>
+          <span id="legend-max">—</span>
+        </div>
+      </div>
+      <div class="hint">
+        Click any element (surface, water, park, road, building) to
+        <b>select</b> it — selected elements turn cyan. Click again to
+        deselect.
+      </div>
+    </div>
+    <div id="scatter" style="display: none">
+      <h2>Noise vs. building area</h2>
+      <p class="sub">
+        Each point is a building · x = noise events (500 m) · y = footprint area
+      </p>
+      <canvas id="scatter-canvas" width="320" height="240"></canvas>
+      <div id="scatter-info">Drag a box over the points to highlight buildings.</div>
+    </div>
+    <div id="tooltip"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "manhattan-street-network",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3005",
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 3005"
+  },
+  "dependencies": {
+    "autk-compute": "file:../../../../../libs/autk-compute-1.1.0.tgz",
+    "autk-db": "file:../../../../../libs/autk-db-1.1.0.tgz",
+    "autk-map": "file:../../../../../libs/autk-map-0.1.0.tgz"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2",
+    "vite": "^6.0.0"
+  }
+}
