@@ -1,6 +1,111 @@
 {
+  "cohorts": {
+    "opus-4.6": {
+      "app1-subway-accessibility": "t1",
+      "app2-noise-pollution": "t1",
+      "app3-noise-scatterplot": "t1",
+      "app4-street-network": "t1",
+      "app5-subway-picking": "t1"
+    },
+    "opus-4.8": {
+      "app1-subway-accessibility": "t3",
+      "app2-noise-pollution": "t3",
+      "app3-noise-scatterplot": "t3",
+      "app4-street-network": "t2",
+      "app5-subway-picking": "t3"
+    }
+  },
   "trials": [
     {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
+      "app": "app1-subway-accessibility",
+      "trial": "t1",
+      "condition": "general",
+      "meta": {
+        "trial": "t1",
+        "model": "opus",
+        "max_turns": 50,
+        "duration_seconds": 154,
+        "timestamp": "2026-03-24T21:00:33Z"
+      },
+      "size": {
+        "total_lines": 406,
+        "code_lines": 331,
+        "comment_lines": 22,
+        "blank_lines": 53,
+        "source_files": 4,
+        "all_files": 6,
+        "dependencies": 2,
+        "dev_dependencies": 3
+      },
+      "complexity": {
+        "cyclomatic": 45,
+        "cognitive": 101,
+        "max_nesting_depth": 7,
+        "per_file_cyclomatic": {
+          "src/buildings.ts": 33,
+          "src/geo.ts": 1,
+          "src/main.ts": 13,
+          "src/subway.ts": 1
+        }
+      },
+      "maintainability": {
+        "num_functions": 34,
+        "avg_function_length": 15.8,
+        "max_function_length": 100,
+        "longest_function": {
+          "name": "main",
+          "start": 11,
+          "length": 100,
+          "file": "src/main.ts"
+        },
+        "comment_density": 0.066,
+        "any_type_count": 0,
+        "console_log_count": 1
+      },
+      "readability": {
+        "import_count": 11,
+        "export_count": 4,
+        "magic_number_count": 27,
+        "max_line_length": 100,
+        "avg_line_length": 31.1,
+        "duplicate_line_ratio": 0.077
+      },
+      "per_file": [
+        {
+          "total": 138,
+          "code": 111,
+          "comment": 10,
+          "blank": 17,
+          "file": "src/buildings.ts"
+        },
+        {
+          "total": 67,
+          "code": 50,
+          "comment": 7,
+          "blank": 10,
+          "file": "src/geo.ts"
+        },
+        {
+          "total": 170,
+          "code": 143,
+          "comment": 5,
+          "blank": 22,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 31,
+          "code": 27,
+          "comment": 0,
+          "blank": 4,
+          "file": "src/subway.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
       "app": "app1-subway-accessibility",
       "trial": "t1",
       "condition": "autark",
@@ -62,154 +167,111 @@
       ]
     },
     {
-      "app": "app1-subway-accessibility",
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
+      "app": "app2-noise-pollution",
       "trial": "t1",
       "condition": "general",
       "meta": {
-        "trial": "t1",
+        "trial": "t3",
         "model": "opus",
         "max_turns": 50,
-        "duration_seconds": 154,
-        "timestamp": "2026-03-24T21:00:33Z"
+        "duration_seconds": 275,
+        "timestamp": "2026-03-24T22:17:39Z"
       },
       "size": {
-        "total_lines": 406,
-        "code_lines": 331,
-        "comment_lines": 22,
-        "blank_lines": 53,
-        "source_files": 4,
-        "all_files": 6,
-        "dependencies": 2,
-        "dev_dependencies": 3
+        "total_lines": 874,
+        "code_lines": 685,
+        "comment_lines": 64,
+        "blank_lines": 125,
+        "source_files": 6,
+        "all_files": 7,
+        "dependencies": 10,
+        "dev_dependencies": 4
       },
       "complexity": {
-        "cyclomatic": 45,
-        "cognitive": 101,
-        "max_nesting_depth": 7,
+        "cyclomatic": 142,
+        "cognitive": 348,
+        "max_nesting_depth": 6,
         "per_file_cyclomatic": {
-          "src/buildings.ts": 33,
-          "src/main.ts": 13,
-          "src/subway.ts": 1,
-          "src/geo.ts": 1
+          "src/spatialJoin.ts": 14,
+          "src/osmParser.ts": 56,
+          "src/main.ts": 57,
+          "src/colorScale.ts": 3,
+          "src/noiseLoader.ts": 11,
+          "src/overpass.ts": 6
         }
       },
       "maintainability": {
-        "num_functions": 34,
-        "avg_function_length": 15.8,
-        "max_function_length": 100,
+        "num_functions": 57,
+        "avg_function_length": 23.8,
+        "max_function_length": 176,
         "longest_function": {
-          "name": "main",
-          "start": 11,
-          "length": 100,
+          "name": "createLayers",
+          "start": 88,
+          "length": 176,
           "file": "src/main.ts"
         },
-        "comment_density": 0.066,
-        "any_type_count": 0,
-        "console_log_count": 1
+        "comment_density": 0.093,
+        "any_type_count": 27,
+        "console_log_count": 25
       },
       "readability": {
-        "import_count": 11,
-        "export_count": 4,
-        "magic_number_count": 27,
-        "max_line_length": 100,
-        "avg_line_length": 31.1,
-        "duplicate_line_ratio": 0.077
+        "import_count": 12,
+        "export_count": 12,
+        "magic_number_count": 84,
+        "max_line_length": 133,
+        "avg_line_length": 33.6,
+        "duplicate_line_ratio": 0.149
       },
       "per_file": [
         {
-          "total": 138,
-          "code": 111,
+          "total": 98,
+          "code": 69,
           "comment": 10,
-          "blank": 17,
-          "file": "src/buildings.ts"
+          "blank": 19,
+          "file": "src/spatialJoin.ts"
         },
         {
-          "total": 170,
-          "code": 143,
+          "total": 236,
+          "code": 191,
+          "comment": 11,
+          "blank": 34,
+          "file": "src/osmParser.ts"
+        },
+        {
+          "total": 356,
+          "code": 297,
+          "comment": 21,
+          "blank": 38,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 30,
+          "code": 21,
+          "comment": 4,
+          "blank": 5,
+          "file": "src/colorScale.ts"
+        },
+        {
+          "total": 60,
+          "code": 42,
           "comment": 5,
-          "blank": 22,
-          "file": "src/main.ts"
+          "blank": 13,
+          "file": "src/noiseLoader.ts"
         },
         {
-          "total": 31,
-          "code": 27,
-          "comment": 0,
-          "blank": 4,
-          "file": "src/subway.ts"
-        },
-        {
-          "total": 67,
-          "code": 50,
-          "comment": 7,
-          "blank": 10,
-          "file": "src/geo.ts"
+          "total": 94,
+          "code": 65,
+          "comment": 13,
+          "blank": 16,
+          "file": "src/overpass.ts"
         }
       ]
     },
     {
-      "app": "app1-subway-accessibility",
-      "trial": "t2",
-      "condition": "autark",
-      "meta": {
-        "app": "app1-subway-accessibility",
-        "trial": "t2",
-        "variant": "autark",
-        "model": "sonnet",
-        "max_turns": 50,
-        "duration_seconds": 299,
-        "timestamp": "2026-03-26T19:09:19Z"
-      },
-      "size": {
-        "total_lines": 221,
-        "code_lines": 166,
-        "comment_lines": 15,
-        "blank_lines": 40,
-        "source_files": 1,
-        "all_files": 2,
-        "dependencies": 2,
-        "dev_dependencies": 2
-      },
-      "complexity": {
-        "cyclomatic": 37,
-        "cognitive": 26,
-        "max_nesting_depth": 4,
-        "per_file_cyclomatic": {
-          "src/main.ts": 37
-        }
-      },
-      "maintainability": {
-        "num_functions": 4,
-        "avg_function_length": 53.8,
-        "max_function_length": 196,
-        "longest_function": {
-          "name": "main",
-          "start": 19,
-          "length": 196,
-          "file": "src/main.ts"
-        },
-        "comment_density": 0.09,
-        "any_type_count": 0,
-        "console_log_count": 22
-      },
-      "readability": {
-        "import_count": 2,
-        "export_count": 0,
-        "magic_number_count": 1,
-        "max_line_length": 130,
-        "avg_line_length": 40.3,
-        "duplicate_line_ratio": 0.045
-      },
-      "per_file": [
-        {
-          "total": 221,
-          "code": 166,
-          "comment": 15,
-          "blank": 40,
-          "file": "src/main.ts"
-        }
-      ]
-    },
-    {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
       "app": "app2-noise-pollution",
       "trial": "t1",
       "condition": "autark",
@@ -271,107 +333,127 @@
       ]
     },
     {
-      "app": "app2-noise-pollution",
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
+      "app": "app3-noise-scatterplot",
       "trial": "t1",
       "condition": "general",
       "meta": {
-        "trial": "t3",
+        "trial": "t4",
         "model": "opus",
         "max_turns": 50,
-        "duration_seconds": 275,
-        "timestamp": "2026-03-24T22:17:39Z"
+        "duration_seconds": 292,
+        "timestamp": "2026-03-24T22:33:57Z"
       },
       "size": {
-        "total_lines": 874,
-        "code_lines": 685,
-        "comment_lines": 64,
-        "blank_lines": 125,
-        "source_files": 6,
-        "all_files": 7,
-        "dependencies": 10,
-        "dev_dependencies": 4
+        "total_lines": 1031,
+        "code_lines": 825,
+        "comment_lines": 61,
+        "blank_lines": 145,
+        "source_files": 8,
+        "all_files": 9,
+        "dependencies": 9,
+        "dev_dependencies": 5
       },
       "complexity": {
-        "cyclomatic": 124,
-        "cognitive": 287,
-        "max_nesting_depth": 6,
+        "cyclomatic": 131,
+        "cognitive": 346,
+        "max_nesting_depth": 7,
         "per_file_cyclomatic": {
-          "src/noiseLoader.ts": 11,
-          "src/main.ts": 57,
-          "src/osmParser.ts": 56,
-          "src/spatialJoin.ts": 14,
-          "src/overpass.ts": 6,
-          "src/colorScale.ts": 3
+          "src/scatterplot.ts": 15,
+          "src/types.ts": 1,
+          "src/noise.ts": 9,
+          "src/osm.ts": 47,
+          "src/spatial.ts": 16,
+          "src/colors.ts": 5,
+          "src/main.ts": 4,
+          "src/map.ts": 41
         }
       },
       "maintainability": {
-        "num_functions": 57,
-        "avg_function_length": 23.8,
-        "max_function_length": 176,
+        "num_functions": 65,
+        "avg_function_length": 21.4,
+        "max_function_length": 129,
         "longest_function": {
-          "name": "createLayers",
-          "start": 88,
-          "length": 176,
-          "file": "src/main.ts"
+          "name": "createScatterplot",
+          "start": 16,
+          "length": 129,
+          "file": "src/scatterplot.ts"
         },
-        "comment_density": 0.093,
-        "any_type_count": 24,
-        "console_log_count": 25
+        "comment_density": 0.074,
+        "any_type_count": 32,
+        "console_log_count": 32
       },
       "readability": {
-        "import_count": 12,
-        "export_count": 12,
-        "magic_number_count": 79,
-        "max_line_length": 133,
-        "avg_line_length": 33.6,
-        "duplicate_line_ratio": 0.149
+        "import_count": 26,
+        "export_count": 29,
+        "magic_number_count": 80,
+        "max_line_length": 165,
+        "avg_line_length": 34.4,
+        "duplicate_line_ratio": 0.118
       },
       "per_file": [
         {
-          "total": 60,
-          "code": 42,
-          "comment": 5,
-          "blank": 13,
-          "file": "src/noiseLoader.ts"
+          "total": 145,
+          "code": 110,
+          "comment": 10,
+          "blank": 25,
+          "file": "src/scatterplot.ts"
         },
         {
-          "total": 356,
-          "code": 297,
-          "comment": 21,
-          "blank": 38,
+          "total": 43,
+          "code": 36,
+          "comment": 0,
+          "blank": 7,
+          "file": "src/types.ts"
+        },
+        {
+          "total": 43,
+          "code": 35,
+          "comment": 3,
+          "blank": 5,
+          "file": "src/noise.ts"
+        },
+        {
+          "total": 206,
+          "code": 167,
+          "comment": 10,
+          "blank": 29,
+          "file": "src/osm.ts"
+        },
+        {
+          "total": 135,
+          "code": 104,
+          "comment": 9,
+          "blank": 22,
+          "file": "src/spatial.ts"
+        },
+        {
+          "total": 51,
+          "code": 36,
+          "comment": 4,
+          "blank": 11,
+          "file": "src/colors.ts"
+        },
+        {
+          "total": 63,
+          "code": 39,
+          "comment": 10,
+          "blank": 14,
           "file": "src/main.ts"
         },
         {
-          "total": 236,
-          "code": 191,
-          "comment": 11,
-          "blank": 34,
-          "file": "src/osmParser.ts"
-        },
-        {
-          "total": 98,
-          "code": 69,
-          "comment": 10,
-          "blank": 19,
-          "file": "src/spatialJoin.ts"
-        },
-        {
-          "total": 94,
-          "code": 65,
-          "comment": 13,
-          "blank": 16,
-          "file": "src/overpass.ts"
-        },
-        {
-          "total": 30,
-          "code": 21,
-          "comment": 4,
-          "blank": 5,
-          "file": "src/colorScale.ts"
+          "total": 345,
+          "code": 298,
+          "comment": 15,
+          "blank": 32,
+          "file": "src/map.ts"
         }
       ]
     },
     {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
       "app": "app3-noise-scatterplot",
       "trial": "t1",
       "condition": "autark",
@@ -433,297 +515,135 @@
       ]
     },
     {
-      "app": "app3-noise-scatterplot",
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
+      "app": "app4-street-network",
       "trial": "t1",
       "condition": "general",
       "meta": {
-        "trial": "t4",
+        "trial": "t9",
         "model": "opus",
-        "max_turns": 50,
-        "duration_seconds": 292,
-        "timestamp": "2026-03-24T22:33:57Z"
+        "max_turns": 150,
+        "duration_seconds": 353,
+        "timestamp": "2026-03-25T19:58:55Z"
       },
       "size": {
-        "total_lines": 1031,
-        "code_lines": 825,
-        "comment_lines": 61,
-        "blank_lines": 145,
-        "source_files": 8,
-        "all_files": 9,
-        "dependencies": 9,
-        "dev_dependencies": 5
+        "total_lines": 742,
+        "code_lines": 600,
+        "comment_lines": 38,
+        "blank_lines": 104,
+        "source_files": 9,
+        "all_files": 10,
+        "dependencies": 2,
+        "dev_dependencies": 4
       },
       "complexity": {
-        "cyclomatic": 131,
-        "cognitive": 346,
-        "max_nesting_depth": 7,
+        "cyclomatic": 45,
+        "cognitive": 126,
+        "max_nesting_depth": 6,
         "per_file_cyclomatic": {
-          "src/colors.ts": 5,
-          "src/main.ts": 4,
-          "src/noise.ts": 9,
-          "src/map.ts": 41,
-          "src/spatial.ts": 16,
-          "src/types.ts": 1,
-          "src/osm.ts": 47,
-          "src/scatterplot.ts": 15
+          "src/main.ts": 9,
+          "src/map/styles.ts": 1,
+          "src/map/mapManager.ts": 15,
+          "src/compute/gpuLength.ts": 5,
+          "src/compute/cpuLength.ts": 3,
+          "src/compute/lengthCalculator.ts": 4,
+          "src/data/types.ts": 1,
+          "src/data/osmParser.ts": 9,
+          "src/data/overpassClient.ts": 6
         }
       },
       "maintainability": {
-        "num_functions": 65,
-        "avg_function_length": 21.4,
-        "max_function_length": 129,
+        "num_functions": 32,
+        "avg_function_length": 21.9,
+        "max_function_length": 117,
         "longest_function": {
-          "name": "createScatterplot",
-          "start": 16,
-          "length": 129,
-          "file": "src/scatterplot.ts"
+          "name": "addLayers",
+          "start": 64,
+          "length": 117,
+          "file": "src/map/mapManager.ts"
         },
-        "comment_density": 0.074,
-        "any_type_count": 32,
+        "comment_density": 0.063,
+        "any_type_count": 0,
         "console_log_count": 32
       },
       "readability": {
-        "import_count": 26,
-        "export_count": 29,
-        "magic_number_count": 80,
-        "max_line_length": 165,
-        "avg_line_length": 34.4,
-        "duplicate_line_ratio": 0.118
+        "import_count": 18,
+        "export_count": 15,
+        "magic_number_count": 37,
+        "max_line_length": 163,
+        "avg_line_length": 34.8,
+        "duplicate_line_ratio": 0.147
       },
       "per_file": [
         {
-          "total": 51,
-          "code": 36,
-          "comment": 4,
-          "blank": 11,
-          "file": "src/colors.ts"
-        },
-        {
-          "total": 63,
-          "code": 39,
-          "comment": 10,
+          "total": 69,
+          "code": 47,
+          "comment": 8,
           "blank": 14,
           "file": "src/main.ts"
         },
         {
-          "total": 43,
-          "code": 35,
+          "total": 32,
+          "code": 24,
           "comment": 3,
           "blank": 5,
-          "file": "src/noise.ts"
+          "file": "src/map/styles.ts"
         },
         {
-          "total": 345,
-          "code": 298,
-          "comment": 15,
-          "blank": 32,
-          "file": "src/map.ts"
-        },
-        {
-          "total": 135,
-          "code": 104,
+          "total": 269,
+          "code": 233,
           "comment": 9,
-          "blank": 22,
-          "file": "src/spatial.ts"
+          "blank": 27,
+          "file": "src/map/mapManager.ts"
         },
         {
-          "total": 43,
-          "code": 36,
+          "total": 138,
+          "code": 109,
+          "comment": 6,
+          "blank": 23,
+          "file": "src/compute/gpuLength.ts"
+        },
+        {
+          "total": 36,
+          "code": 29,
           "comment": 0,
           "blank": 7,
-          "file": "src/types.ts"
+          "file": "src/compute/cpuLength.ts"
         },
         {
-          "total": 206,
-          "code": 167,
-          "comment": 10,
-          "blank": 29,
-          "file": "src/osm.ts"
-        },
-        {
-          "total": 145,
-          "code": 110,
-          "comment": 10,
-          "blank": 25,
-          "file": "src/scatterplot.ts"
-        }
-      ]
-    },
-    {
-      "app": "app3-noise-scatterplot",
-      "trial": "t2",
-      "condition": "autark",
-      "meta": {
-        "app": "app3-noise-scatterplot",
-        "trial": "t2",
-        "variant": "autark",
-        "model": "opus",
-        "max_turns": 150,
-        "duration_seconds": 329,
-        "timestamp": "2026-03-27T17:20:17Z"
-      },
-      "size": {
-        "total_lines": 241,
-        "code_lines": 197,
-        "comment_lines": 18,
-        "blank_lines": 26,
-        "source_files": 1,
-        "all_files": 2,
-        "dependencies": 4,
-        "dev_dependencies": 2
-      },
-      "complexity": {
-        "cyclomatic": 29,
-        "cognitive": 53,
-        "max_nesting_depth": 5,
-        "per_file_cyclomatic": {
-          "src/main.ts": 29
-        }
-      },
-      "maintainability": {
-        "num_functions": 8,
-        "avg_function_length": 35.4,
-        "max_function_length": 224,
-        "longest_function": {
-          "name": "main",
-          "start": 15,
-          "length": 224,
-          "file": "src/main.ts"
-        },
-        "comment_density": 0.091,
-        "any_type_count": 0,
-        "console_log_count": 2
-      },
-      "readability": {
-        "import_count": 3,
-        "export_count": 0,
-        "magic_number_count": 4,
-        "max_line_length": 112,
-        "avg_line_length": 37.8,
-        "duplicate_line_ratio": 0.097
-      },
-      "per_file": [
-        {
-          "total": 241,
-          "code": 197,
-          "comment": 18,
-          "blank": 26,
-          "file": "src/main.ts"
-        }
-      ]
-    },
-    {
-      "app": "app3-noise-scatterplot",
-      "trial": "t2",
-      "condition": "general",
-      "meta": {
-        "app": "app3-noise-scatterplot",
-        "trial": "t2",
-        "variant": "general",
-        "model": "opus",
-        "max_turns": 150,
-        "duration_seconds": 332,
-        "timestamp": "2026-03-27T17:25:49Z"
-      },
-      "size": {
-        "total_lines": 803,
-        "code_lines": 645,
-        "comment_lines": 46,
-        "blank_lines": 112,
-        "source_files": 7,
-        "all_files": 9,
-        "dependencies": 15,
-        "dev_dependencies": 0
-      },
-      "complexity": {
-        "cyclomatic": 98,
-        "cognitive": 226,
-        "max_nesting_depth": 7,
-        "per_file_cyclomatic": {
-          "src/noiseLoader.ts": 10,
-          "src/main.ts": 23,
-          "src/types.ts": 1,
-          "src/spatialJoin.ts": 19,
-          "src/overpass.ts": 37,
-          "src/scatterplot.ts": 12,
-          "src/colorScale.ts": 2
-        }
-      },
-      "maintainability": {
-        "num_functions": 51,
-        "avg_function_length": 19.8,
-        "max_function_length": 124,
-        "longest_function": {
-          "name": "createScatterplot",
-          "start": 8,
-          "length": 124,
-          "file": "src/scatterplot.ts"
-        },
-        "comment_density": 0.071,
-        "any_type_count": 0,
-        "console_log_count": 21
-      },
-      "readability": {
-        "import_count": 20,
-        "export_count": 12,
-        "magic_number_count": 91,
-        "max_line_length": 168,
-        "avg_line_length": 33.5,
-        "duplicate_line_ratio": 0.085
-      },
-      "per_file": [
-        {
-          "total": 50,
-          "code": 43,
-          "comment": 1,
-          "blank": 6,
-          "file": "src/noiseLoader.ts"
-        },
-        {
-          "total": 266,
-          "code": 218,
-          "comment": 17,
-          "blank": 31,
-          "file": "src/main.ts"
+          "total": 25,
+          "code": 17,
+          "comment": 4,
+          "blank": 4,
+          "file": "src/compute/lengthCalculator.ts"
         },
         {
           "total": 28,
-          "code": 23,
+          "code": 22,
           "comment": 0,
-          "blank": 5,
-          "file": "src/types.ts"
+          "blank": 6,
+          "file": "src/data/types.ts"
         },
         {
-          "total": 146,
-          "code": 112,
-          "comment": 14,
-          "blank": 20,
-          "file": "src/spatialJoin.ts"
+          "total": 82,
+          "code": 69,
+          "comment": 3,
+          "blank": 10,
+          "file": "src/data/osmParser.ts"
         },
         {
-          "total": 160,
-          "code": 132,
+          "total": 63,
+          "code": 50,
           "comment": 5,
-          "blank": 23,
-          "file": "src/overpass.ts"
-        },
-        {
-          "total": 132,
-          "code": 101,
-          "comment": 8,
-          "blank": 23,
-          "file": "src/scatterplot.ts"
-        },
-        {
-          "total": 21,
-          "code": 16,
-          "comment": 1,
-          "blank": 4,
-          "file": "src/colorScale.ts"
+          "blank": 8,
+          "file": "src/data/overpassClient.ts"
         }
       ]
     },
     {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
       "app": "app4-street-network",
       "trial": "t1",
       "condition": "autark",
@@ -785,131 +705,103 @@
       ]
     },
     {
-      "app": "app4-street-network",
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
+      "app": "app5-subway-picking",
       "trial": "t1",
       "condition": "general",
       "meta": {
-        "trial": "t9",
+        "trial": "t2",
         "model": "opus",
-        "max_turns": 150,
-        "duration_seconds": 353,
-        "timestamp": "2026-03-25T19:58:55Z"
+        "max_turns": 50,
+        "duration_seconds": 423,
+        "timestamp": "2026-03-24T22:00:13Z"
       },
       "size": {
-        "total_lines": 742,
-        "code_lines": 600,
-        "comment_lines": 38,
-        "blank_lines": 104,
-        "source_files": 9,
-        "all_files": 10,
-        "dependencies": 2,
+        "total_lines": 680,
+        "code_lines": 549,
+        "comment_lines": 44,
+        "blank_lines": 87,
+        "source_files": 5,
+        "all_files": 6,
+        "dependencies": 3,
         "dev_dependencies": 4
       },
       "complexity": {
-        "cyclomatic": 45,
-        "cognitive": 126,
+        "cyclomatic": 53,
+        "cognitive": 147,
         "max_nesting_depth": 6,
         "per_file_cyclomatic": {
-          "src/main.ts": 9,
-          "src/map/mapManager.ts": 15,
-          "src/map/styles.ts": 1,
-          "src/compute/cpuLength.ts": 3,
-          "src/compute/lengthCalculator.ts": 4,
-          "src/compute/gpuLength.ts": 5,
-          "src/data/overpassClient.ts": 6,
-          "src/data/types.ts": 1,
-          "src/data/osmParser.ts": 9
+          "src/osmtogeojson.d.ts": 1,
+          "src/types.ts": 1,
+          "src/spatial.ts": 12,
+          "src/main.ts": 25,
+          "src/overpass.ts": 18
         }
       },
       "maintainability": {
-        "num_functions": 32,
-        "avg_function_length": 21.9,
-        "max_function_length": 117,
+        "num_functions": 55,
+        "avg_function_length": 12.7,
+        "max_function_length": 81,
         "longest_function": {
-          "name": "addLayers",
-          "start": 64,
-          "length": 117,
-          "file": "src/map/mapManager.ts"
+          "name": "main",
+          "start": 291,
+          "length": 81,
+          "file": "src/main.ts"
         },
-        "comment_density": 0.063,
-        "any_type_count": 0,
-        "console_log_count": 32
+        "comment_density": 0.08,
+        "any_type_count": 1,
+        "console_log_count": 40
       },
       "readability": {
-        "import_count": 18,
-        "export_count": 15,
-        "magic_number_count": 37,
+        "import_count": 12,
+        "export_count": 13,
+        "magic_number_count": 39,
         "max_line_length": 163,
-        "avg_line_length": 34.8,
-        "duplicate_line_ratio": 0.147
+        "avg_line_length": 34.2,
+        "duplicate_line_ratio": 0.122
       },
       "per_file": [
         {
-          "total": 69,
-          "code": 47,
-          "comment": 8,
-          "blank": 14,
+          "total": 6,
+          "code": 5,
+          "comment": 0,
+          "blank": 1,
+          "file": "src/osmtogeojson.d.ts"
+        },
+        {
+          "total": 27,
+          "code": 23,
+          "comment": 0,
+          "blank": 4,
+          "file": "src/types.ts"
+        },
+        {
+          "total": 73,
+          "code": 60,
+          "comment": 6,
+          "blank": 7,
+          "file": "src/spatial.ts"
+        },
+        {
+          "total": 377,
+          "code": 302,
+          "comment": 24,
+          "blank": 51,
           "file": "src/main.ts"
         },
         {
-          "total": 269,
-          "code": 233,
-          "comment": 9,
-          "blank": 27,
-          "file": "src/map/mapManager.ts"
-        },
-        {
-          "total": 32,
-          "code": 24,
-          "comment": 3,
-          "blank": 5,
-          "file": "src/map/styles.ts"
-        },
-        {
-          "total": 36,
-          "code": 29,
-          "comment": 0,
-          "blank": 7,
-          "file": "src/compute/cpuLength.ts"
-        },
-        {
-          "total": 25,
-          "code": 17,
-          "comment": 4,
-          "blank": 4,
-          "file": "src/compute/lengthCalculator.ts"
-        },
-        {
-          "total": 138,
-          "code": 109,
-          "comment": 6,
-          "blank": 23,
-          "file": "src/compute/gpuLength.ts"
-        },
-        {
-          "total": 63,
-          "code": 50,
-          "comment": 5,
-          "blank": 8,
-          "file": "src/data/overpassClient.ts"
-        },
-        {
-          "total": 28,
-          "code": 22,
-          "comment": 0,
-          "blank": 6,
-          "file": "src/data/types.ts"
-        },
-        {
-          "total": 82,
-          "code": 69,
-          "comment": 3,
-          "blank": 10,
-          "file": "src/data/osmParser.ts"
+          "total": 197,
+          "code": 159,
+          "comment": 14,
+          "blank": 24,
+          "file": "src/overpass.ts"
         }
       ]
     },
     {
+      "cohort": "opus-4.6",
+      "model": "opus-4.6",
       "app": "app5-subway-picking",
       "trial": "t1",
       "condition": "autark",
@@ -971,445 +863,1348 @@
       ]
     },
     {
-      "app": "app5-subway-picking",
-      "trial": "t1",
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app1-subway-accessibility",
+      "trial": "t3",
       "condition": "general",
       "meta": {
-        "trial": "t2",
+        "app": "app1-subway-accessibility",
+        "trial": "t3",
+        "variant": "general",
         "model": "opus",
-        "max_turns": 50,
-        "duration_seconds": 423,
-        "timestamp": "2026-03-24T22:00:13Z"
+        "max_turns": 150,
+        "duration_seconds": 380,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T17:51:39Z"
       },
       "size": {
-        "total_lines": 680,
-        "code_lines": 549,
-        "comment_lines": 44,
-        "blank_lines": 87,
-        "source_files": 5,
-        "all_files": 6,
-        "dependencies": 3,
-        "dev_dependencies": 4
+        "total_lines": 770,
+        "code_lines": 625,
+        "comment_lines": 59,
+        "blank_lines": 86,
+        "source_files": 6,
+        "all_files": 7,
+        "dependencies": 4,
+        "dev_dependencies": 2
       },
       "complexity": {
-        "cyclomatic": 53,
-        "cognitive": 147,
-        "max_nesting_depth": 6,
+        "cyclomatic": 83,
+        "cognitive": 205,
+        "max_nesting_depth": 5,
         "per_file_cyclomatic": {
-          "src/osmtogeojson.d.ts": 1,
-          "src/main.ts": 25,
-          "src/spatial.ts": 12,
           "src/types.ts": 1,
-          "src/overpass.ts": 18
+          "src/render.ts": 10,
+          "src/spatial.ts": 14,
+          "src/main.ts": 4,
+          "src/subway.ts": 26,
+          "src/overpass.ts": 33
         }
       },
       "maintainability": {
         "num_functions": 55,
-        "avg_function_length": 12.7,
-        "max_function_length": 81,
+        "avg_function_length": 15.7,
+        "max_function_length": 73,
         "longest_function": {
-          "name": "main",
-          "start": 291,
-          "length": 81,
-          "file": "src/main.ts"
+          "name": "buildDeckLayers",
+          "start": 91,
+          "length": 73,
+          "file": "src/render.ts"
         },
-        "comment_density": 0.08,
-        "any_type_count": 1,
-        "console_log_count": 40
+        "comment_density": 0.094,
+        "any_type_count": 0,
+        "console_log_count": 24
       },
       "readability": {
-        "import_count": 12,
-        "export_count": 13,
-        "magic_number_count": 39,
-        "max_line_length": 163,
-        "avg_line_length": 34.2,
-        "duplicate_line_ratio": 0.122
+        "import_count": 14,
+        "export_count": 9,
+        "magic_number_count": 67,
+        "max_line_length": 131,
+        "avg_line_length": 33.5,
+        "duplicate_line_ratio": 0.091
       },
       "per_file": [
         {
-          "total": 6,
-          "code": 5,
-          "comment": 0,
-          "blank": 1,
-          "file": "src/osmtogeojson.d.ts"
-        },
-        {
-          "total": 377,
-          "code": 302,
-          "comment": 24,
-          "blank": 51,
-          "file": "src/main.ts"
-        },
-        {
-          "total": 73,
-          "code": 60,
-          "comment": 6,
-          "blank": 7,
-          "file": "src/spatial.ts"
-        },
-        {
-          "total": 27,
-          "code": 23,
-          "comment": 0,
-          "blank": 4,
+          "total": 55,
+          "code": 42,
+          "comment": 7,
+          "blank": 6,
           "file": "src/types.ts"
         },
         {
-          "total": 197,
-          "code": 159,
-          "comment": 14,
-          "blank": 24,
+          "total": 200,
+          "code": 171,
+          "comment": 8,
+          "blank": 21,
+          "file": "src/render.ts"
+        },
+        {
+          "total": 92,
+          "code": 68,
+          "comment": 13,
+          "blank": 11,
+          "file": "src/spatial.ts"
+        },
+        {
+          "total": 59,
+          "code": 42,
+          "comment": 5,
+          "blank": 12,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 94,
+          "code": 80,
+          "comment": 6,
+          "blank": 8,
+          "file": "src/subway.ts"
+        },
+        {
+          "total": 270,
+          "code": 222,
+          "comment": 20,
+          "blank": 28,
           "file": "src/overpass.ts"
         }
       ]
     },
     {
-      "app": "app5-subway-picking",
-      "trial": "t2",
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app1-subway-accessibility",
+      "trial": "t3",
       "condition": "autark",
       "meta": {
-        "app": "app5-subway-picking",
-        "trial": "t2",
+        "app": "app1-subway-accessibility",
+        "trial": "t3",
         "variant": "autark",
         "model": "opus",
         "max_turns": 150,
-        "duration_seconds": 238,
-        "timestamp": "2026-03-27T15:43:38Z"
+        "duration_seconds": 357,
+        "exit_code": 0,
+        "status": "ok",
+        "timestamp": "2026-06-12T15:56:59Z"
       },
       "size": {
-        "total_lines": 129,
-        "code_lines": 104,
-        "comment_lines": 9,
-        "blank_lines": 16,
+        "total_lines": 230,
+        "code_lines": 176,
+        "comment_lines": 22,
+        "blank_lines": 32,
         "source_files": 1,
         "all_files": 2,
-        "dependencies": 4,
-        "dev_dependencies": 0
+        "dependencies": 2,
+        "dev_dependencies": 2
       },
       "complexity": {
-        "cyclomatic": 10,
-        "cognitive": 13,
+        "cyclomatic": 27,
+        "cognitive": 27,
         "max_nesting_depth": 4,
         "per_file_cyclomatic": {
-          "src/main.ts": 10
+          "src/main.ts": 27
         }
       },
       "maintainability": {
-        "num_functions": 4,
-        "avg_function_length": 33.8,
-        "max_function_length": 121,
+        "num_functions": 8,
+        "avg_function_length": 27.8,
+        "max_function_length": 180,
         "longest_function": {
           "name": "main",
-          "start": 4,
-          "length": 121,
+          "start": 43,
+          "length": 180,
           "file": "src/main.ts"
         },
-        "comment_density": 0.087,
-        "any_type_count": 0,
-        "console_log_count": 21
+        "comment_density": 0.125,
+        "any_type_count": 1,
+        "console_log_count": 22
       },
       "readability": {
-        "import_count": 2,
+        "import_count": 3,
         "export_count": 0,
         "magic_number_count": 1,
-        "max_line_length": 110,
-        "avg_line_length": 37.1,
-        "duplicate_line_ratio": 0.021
+        "max_line_length": 94,
+        "avg_line_length": 39.7,
+        "duplicate_line_ratio": 0.03
       },
       "per_file": [
         {
-          "total": 129,
-          "code": 104,
-          "comment": 9,
-          "blank": 16,
+          "total": 230,
+          "code": 176,
+          "comment": 22,
+          "blank": 32,
           "file": "src/main.ts"
         }
       ]
     },
     {
-      "app": "app5-subway-picking",
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app2-noise-pollution",
+      "trial": "t3",
+      "condition": "general",
+      "meta": {
+        "app": "app2-noise-pollution",
+        "trial": "t5",
+        "variant": "general",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 443,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T18:47:56Z"
+      },
+      "size": {
+        "total_lines": 899,
+        "code_lines": 733,
+        "comment_lines": 71,
+        "blank_lines": 95,
+        "source_files": 6,
+        "all_files": 7,
+        "dependencies": 4,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 115,
+        "cognitive": 254,
+        "max_nesting_depth": 5,
+        "per_file_cyclomatic": {
+          "src/types.ts": 1,
+          "src/render.ts": 32,
+          "src/noise.ts": 28,
+          "src/spatial.ts": 14,
+          "src/main.ts": 4,
+          "src/overpass.ts": 41
+        }
+      },
+      "maintainability": {
+        "num_functions": 62,
+        "avg_function_length": 18.7,
+        "max_function_length": 205,
+        "longest_function": {
+          "name": "renderMap",
+          "start": 54,
+          "length": 205,
+          "file": "src/render.ts"
+        },
+        "comment_density": 0.097,
+        "any_type_count": 0,
+        "console_log_count": 26
+      },
+      "readability": {
+        "import_count": 14,
+        "export_count": 10,
+        "magic_number_count": 72,
+        "max_line_length": 138,
+        "avg_line_length": 34.7,
+        "duplicate_line_ratio": 0.088
+      },
+      "per_file": [
+        {
+          "total": 62,
+          "code": 44,
+          "comment": 11,
+          "blank": 7,
+          "file": "src/types.ts"
+        },
+        {
+          "total": 265,
+          "code": 229,
+          "comment": 10,
+          "blank": 26,
+          "file": "src/render.ts"
+        },
+        {
+          "total": 100,
+          "code": 86,
+          "comment": 6,
+          "blank": 8,
+          "file": "src/noise.ts"
+        },
+        {
+          "total": 92,
+          "code": 68,
+          "comment": 13,
+          "blank": 11,
+          "file": "src/spatial.ts"
+        },
+        {
+          "total": 59,
+          "code": 42,
+          "comment": 5,
+          "blank": 12,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 321,
+          "code": 264,
+          "comment": 26,
+          "blank": 31,
+          "file": "src/overpass.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app2-noise-pollution",
+      "trial": "t3",
+      "condition": "autark",
+      "meta": {
+        "app": "app2-noise-pollution",
+        "trial": "t4",
+        "variant": "autark",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 227,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T18:29:04Z"
+      },
+      "size": {
+        "total_lines": 244,
+        "code_lines": 179,
+        "comment_lines": 41,
+        "blank_lines": 24,
+        "source_files": 1,
+        "all_files": 2,
+        "dependencies": 2,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 19,
+        "cognitive": 34,
+        "max_nesting_depth": 5,
+        "per_file_cyclomatic": {
+          "src/main.ts": 19
+        }
+      },
+      "maintainability": {
+        "num_functions": 6,
+        "avg_function_length": 38.2,
+        "max_function_length": 200,
+        "longest_function": {
+          "name": "main",
+          "start": 42,
+          "length": 200,
+          "file": "src/main.ts"
+        },
+        "comment_density": 0.229,
+        "any_type_count": 0,
+        "console_log_count": 24
+      },
+      "readability": {
+        "import_count": 3,
+        "export_count": 0,
+        "magic_number_count": 2,
+        "max_line_length": 84,
+        "avg_line_length": 40.7,
+        "duplicate_line_ratio": 0.055
+      },
+      "per_file": [
+        {
+          "total": 244,
+          "code": 179,
+          "comment": 41,
+          "blank": 24,
+          "file": "src/main.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app3-noise-scatterplot",
+      "trial": "t3",
+      "condition": "general",
+      "meta": {
+        "app": "app3-noise-scatterplot",
+        "trial": "t5",
+        "variant": "general",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 392,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T19:43:54Z"
+      },
+      "size": {
+        "total_lines": 1201,
+        "code_lines": 966,
+        "comment_lines": 107,
+        "blank_lines": 128,
+        "source_files": 7,
+        "all_files": 8,
+        "dependencies": 4,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 147,
+        "cognitive": 327,
+        "max_nesting_depth": 5,
+        "per_file_cyclomatic": {
+          "src/types.ts": 1,
+          "src/render.ts": 36,
+          "src/noise.ts": 28,
+          "src/scatter.ts": 26,
+          "src/spatial.ts": 17,
+          "src/main.ts": 4,
+          "src/overpass.ts": 41
+        }
+      },
+      "maintainability": {
+        "num_functions": 79,
+        "avg_function_length": 19.9,
+        "max_function_length": 222,
+        "longest_function": {
+          "name": "renderMap",
+          "start": 63,
+          "length": 222,
+          "file": "src/render.ts"
+        },
+        "comment_density": 0.111,
+        "any_type_count": 0,
+        "console_log_count": 31
+      },
+      "readability": {
+        "import_count": 16,
+        "export_count": 14,
+        "magic_number_count": 94,
+        "max_line_length": 182,
+        "avg_line_length": 34.9,
+        "duplicate_line_ratio": 0.089
+      },
+      "per_file": [
+        {
+          "total": 64,
+          "code": 45,
+          "comment": 12,
+          "blank": 7,
+          "file": "src/types.ts"
+        },
+        {
+          "total": 291,
+          "code": 246,
+          "comment": 17,
+          "blank": 28,
+          "file": "src/render.ts"
+        },
+        {
+          "total": 100,
+          "code": 86,
+          "comment": 6,
+          "blank": 8,
+          "file": "src/noise.ts"
+        },
+        {
+          "total": 225,
+          "code": 179,
+          "comment": 18,
+          "blank": 28,
+          "file": "src/scatter.ts"
+        },
+        {
+          "total": 122,
+          "code": 89,
+          "comment": 20,
+          "blank": 13,
+          "file": "src/spatial.ts"
+        },
+        {
+          "total": 78,
+          "code": 57,
+          "comment": 8,
+          "blank": 13,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 321,
+          "code": 264,
+          "comment": 26,
+          "blank": 31,
+          "file": "src/overpass.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app3-noise-scatterplot",
+      "trial": "t3",
+      "condition": "autark",
+      "meta": {
+        "app": "app3-noise-scatterplot",
+        "trial": "t4",
+        "variant": "autark",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 467,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T19:37:12Z"
+      },
+      "size": {
+        "total_lines": 379,
+        "code_lines": 287,
+        "comment_lines": 57,
+        "blank_lines": 35,
+        "source_files": 1,
+        "all_files": 2,
+        "dependencies": 3,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 34,
+        "cognitive": 78,
+        "max_nesting_depth": 5,
+        "per_file_cyclomatic": {
+          "src/main.ts": 34
+        }
+      },
+      "maintainability": {
+        "num_functions": 16,
+        "avg_function_length": 25.6,
+        "max_function_length": 284,
+        "longest_function": {
+          "name": "main",
+          "start": 93,
+          "length": 284,
+          "file": "src/main.ts"
+        },
+        "comment_density": 0.199,
+        "any_type_count": 0,
+        "console_log_count": 29
+      },
+      "readability": {
+        "import_count": 4,
+        "export_count": 0,
+        "magic_number_count": 11,
+        "max_line_length": 84,
+        "avg_line_length": 40.9,
+        "duplicate_line_ratio": 0.056
+      },
+      "per_file": [
+        {
+          "total": 379,
+          "code": 287,
+          "comment": 57,
+          "blank": 35,
+          "file": "src/main.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app4-street-network",
       "trial": "t2",
       "condition": "general",
       "meta": {
-        "app": "app5-subway-picking",
+        "app": "app4-street-network",
         "trial": "t2",
         "variant": "general",
         "model": "opus",
         "max_turns": 150,
-        "duration_seconds": 193,
-        "timestamp": "2026-03-27T15:46:51Z"
+        "duration_seconds": 390,
+        "exit_code": 0,
+        "status": "ok",
+        "timestamp": "2026-06-13T19:57:26Z"
       },
       "size": {
-        "total_lines": 600,
-        "code_lines": 498,
-        "comment_lines": 36,
-        "blank_lines": 66,
-        "source_files": 3,
-        "all_files": 4,
+        "total_lines": 1032,
+        "code_lines": 846,
+        "comment_lines": 63,
+        "blank_lines": 123,
+        "source_files": 11,
+        "all_files": 12,
         "dependencies": 2,
         "dev_dependencies": 4
       },
       "complexity": {
-        "cyclomatic": 90,
-        "cognitive": 219,
+        "cyclomatic": 109,
+        "cognitive": 287,
         "max_nesting_depth": 6,
         "per_file_cyclomatic": {
-          "src/main.ts": 48,
-          "src/spatial.ts": 4,
-          "src/overpass.ts": 40
+          "src/main.ts": 9,
+          "src/map/styles.ts": 1,
+          "src/map/mapManager.ts": 29,
+          "src/compute/projection.ts": 5,
+          "src/compute/gpuCompute.ts": 6,
+          "src/compute/cpuCompute.ts": 10,
+          "src/compute/roadMetrics.ts": 4,
+          "src/data/types.ts": 1,
+          "src/data/osmParser.ts": 19,
+          "src/data/overpassClient.ts": 7,
+          "src/data/noiseLoader.ts": 28
         }
       },
       "maintainability": {
-        "num_functions": 55,
-        "avg_function_length": 15.3,
-        "max_function_length": 74,
+        "num_functions": 63,
+        "avg_function_length": 16.5,
+        "max_function_length": 101,
         "longest_function": {
-          "name": "loadAllLayers",
-          "start": 100,
-          "length": 74,
-          "file": "src/overpass.ts"
+          "name": "gpuCompute",
+          "start": 99,
+          "length": 101,
+          "file": "src/compute/gpuCompute.ts"
         },
-        "comment_density": 0.072,
-        "any_type_count": 3,
-        "console_log_count": 27
+        "comment_density": 0.074,
+        "any_type_count": 0,
+        "console_log_count": 42
       },
       "readability": {
-        "import_count": 5,
-        "export_count": 8,
-        "magic_number_count": 54,
-        "max_line_length": 130,
-        "avg_line_length": 35.8,
-        "duplicate_line_ratio": 0.114
+        "import_count": 22,
+        "export_count": 28,
+        "magic_number_count": 58,
+        "max_line_length": 150,
+        "avg_line_length": 37.4,
+        "duplicate_line_ratio": 0.116
       },
       "per_file": [
         {
-          "total": 362,
-          "code": 300,
-          "comment": 19,
-          "blank": 43,
+          "total": 85,
+          "code": 63,
+          "comment": 7,
+          "blank": 15,
           "file": "src/main.ts"
         },
         {
-          "total": 64,
-          "code": 51,
+          "total": 40,
+          "code": 33,
+          "comment": 2,
+          "blank": 5,
+          "file": "src/map/styles.ts"
+        },
+        {
+          "total": 230,
+          "code": 201,
+          "comment": 4,
+          "blank": 25,
+          "file": "src/map/mapManager.ts"
+        },
+        {
+          "total": 59,
+          "code": 44,
           "comment": 7,
+          "blank": 8,
+          "file": "src/compute/projection.ts"
+        },
+        {
+          "total": 200,
+          "code": 169,
+          "comment": 9,
+          "blank": 22,
+          "file": "src/compute/gpuCompute.ts"
+        },
+        {
+          "total": 82,
+          "code": 73,
+          "comment": 3,
           "blank": 6,
+          "file": "src/compute/cpuCompute.ts"
+        },
+        {
+          "total": 44,
+          "code": 32,
+          "comment": 6,
+          "blank": 6,
+          "file": "src/compute/roadMetrics.ts"
+        },
+        {
+          "total": 37,
+          "code": 28,
+          "comment": 1,
+          "blank": 8,
+          "file": "src/data/types.ts"
+        },
+        {
+          "total": 89,
+          "code": 73,
+          "comment": 6,
+          "blank": 10,
+          "file": "src/data/osmParser.ts"
+        },
+        {
+          "total": 69,
+          "code": 54,
+          "comment": 7,
+          "blank": 8,
+          "file": "src/data/overpassClient.ts"
+        },
+        {
+          "total": 97,
+          "code": 76,
+          "comment": 11,
+          "blank": 10,
+          "file": "src/data/noiseLoader.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app4-street-network",
+      "trial": "t2",
+      "condition": "autark",
+      "meta": {
+        "app": "app4-street-network",
+        "trial": "t3",
+        "variant": "autark",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 604,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T20:08:55Z"
+      },
+      "size": {
+        "total_lines": 326,
+        "code_lines": 252,
+        "comment_lines": 40,
+        "blank_lines": 34,
+        "source_files": 1,
+        "all_files": 2,
+        "dependencies": 3,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 22,
+        "cognitive": 40,
+        "max_nesting_depth": 4,
+        "per_file_cyclomatic": {
+          "src/main.ts": 22
+        }
+      },
+      "maintainability": {
+        "num_functions": 16,
+        "avg_function_length": 24.8,
+        "max_function_length": 241,
+        "longest_function": {
+          "name": "main",
+          "start": 63,
+          "length": 241,
+          "file": "src/main.ts"
+        },
+        "comment_density": 0.159,
+        "any_type_count": 0,
+        "console_log_count": 25
+      },
+      "readability": {
+        "import_count": 4,
+        "export_count": 0,
+        "magic_number_count": 1,
+        "max_line_length": 102,
+        "avg_line_length": 41.4,
+        "duplicate_line_ratio": 0.07
+      },
+      "per_file": [
+        {
+          "total": 326,
+          "code": 252,
+          "comment": 40,
+          "blank": 34,
+          "file": "src/main.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app5-subway-picking",
+      "trial": "t3",
+      "condition": "general",
+      "meta": {
+        "app": "app5-subway-picking",
+        "trial": "t5",
+        "variant": "general",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 363,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T20:31:02Z"
+      },
+      "size": {
+        "total_lines": 933,
+        "code_lines": 763,
+        "comment_lines": 73,
+        "blank_lines": 97,
+        "source_files": 6,
+        "all_files": 7,
+        "dependencies": 4,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 114,
+        "cognitive": 255,
+        "max_nesting_depth": 5,
+        "per_file_cyclomatic": {
+          "src/types.ts": 1,
+          "src/render.ts": 33,
+          "src/spatial.ts": 14,
+          "src/main.ts": 4,
+          "src/subway.ts": 26,
+          "src/overpass.ts": 41
+        }
+      },
+      "maintainability": {
+        "num_functions": 64,
+        "avg_function_length": 19.1,
+        "max_function_length": 242,
+        "longest_function": {
+          "name": "renderMap",
+          "start": 59,
+          "length": 242,
+          "file": "src/render.ts"
+        },
+        "comment_density": 0.096,
+        "any_type_count": 0,
+        "console_log_count": 26
+      },
+      "readability": {
+        "import_count": 14,
+        "export_count": 10,
+        "magic_number_count": 81,
+        "max_line_length": 170,
+        "avg_line_length": 34.7,
+        "duplicate_line_ratio": 0.098
+      },
+      "per_file": [
+        {
+          "total": 60,
+          "code": 44,
+          "comment": 9,
+          "blank": 7,
+          "file": "src/types.ts"
+        },
+        {
+          "total": 307,
+          "code": 265,
+          "comment": 14,
+          "blank": 28,
+          "file": "src/render.ts"
+        },
+        {
+          "total": 92,
+          "code": 68,
+          "comment": 13,
+          "blank": 11,
           "file": "src/spatial.ts"
         },
         {
-          "total": 174,
-          "code": 147,
-          "comment": 10,
-          "blank": 17,
+          "total": 59,
+          "code": 42,
+          "comment": 5,
+          "blank": 12,
+          "file": "src/main.ts"
+        },
+        {
+          "total": 94,
+          "code": 80,
+          "comment": 6,
+          "blank": 8,
+          "file": "src/subway.ts"
+        },
+        {
+          "total": 321,
+          "code": 264,
+          "comment": 26,
+          "blank": 31,
           "file": "src/overpass.ts"
+        }
+      ]
+    },
+    {
+      "cohort": "opus-4.8",
+      "model": "opus-4.8",
+      "app": "app5-subway-picking",
+      "trial": "t3",
+      "condition": "autark",
+      "meta": {
+        "app": "app5-subway-picking",
+        "trial": "t4",
+        "variant": "autark",
+        "model": "opus",
+        "max_turns": 150,
+        "duration_seconds": 276,
+        "exit_code": 0,
+        "status": "ok",
+        "result_captured": true,
+        "timestamp": "2026-06-14T20:19:07Z"
+      },
+      "size": {
+        "total_lines": 285,
+        "code_lines": 218,
+        "comment_lines": 32,
+        "blank_lines": 35,
+        "source_files": 1,
+        "all_files": 2,
+        "dependencies": 2,
+        "dev_dependencies": 2
+      },
+      "complexity": {
+        "cyclomatic": 33,
+        "cognitive": 34,
+        "max_nesting_depth": 3,
+        "per_file_cyclomatic": {
+          "src/main.ts": 33
+        }
+      },
+      "maintainability": {
+        "num_functions": 10,
+        "avg_function_length": 28.4,
+        "max_function_length": 226,
+        "longest_function": {
+          "name": "main",
+          "start": 52,
+          "length": 226,
+          "file": "src/main.ts"
+        },
+        "comment_density": 0.147,
+        "any_type_count": 1,
+        "console_log_count": 26
+      },
+      "readability": {
+        "import_count": 3,
+        "export_count": 0,
+        "magic_number_count": 1,
+        "max_line_length": 85,
+        "avg_line_length": 39.0,
+        "duplicate_line_ratio": 0.043
+      },
+      "per_file": [
+        {
+          "total": 285,
+          "code": 218,
+          "comment": 32,
+          "blank": 35,
+          "file": "src/main.ts"
         }
       ]
     }
   ],
   "summary": {
-    "overall": {
-      "autark": {
-        "num_trials": 8,
-        "avg_code_lines": 152.75,
-        "avg_source_files": 1.0,
-        "avg_dependencies": 3.12,
-        "avg_cyclomatic": 21.75,
-        "avg_cognitive": 29.62,
-        "avg_max_nesting": 4.62,
-        "avg_num_functions": 5.88,
-        "avg_function_length": 39.52,
-        "avg_comment_density": 0.09,
-        "avg_any_types": 0.62,
-        "avg_imports": 2.62,
-        "avg_magic_numbers": 1.62,
-        "avg_duplicate_ratio": 0.04
-      },
-      "general": {
-        "num_trials": 7,
-        "avg_code_lines": 590.43,
-        "avg_source_files": 6.0,
-        "avg_dependencies": 6.14,
-        "avg_cyclomatic": 83.71,
-        "avg_cognitive": 207.43,
-        "avg_max_nesting": 6.43,
-        "avg_num_functions": 49.86,
-        "avg_function_length": 18.67,
-        "avg_comment_density": 0.07,
-        "avg_any_types": 8.57,
-        "avg_imports": 14.86,
-        "avg_magic_numbers": 58.14,
-        "avg_duplicate_ratio": 0.12
-      }
-    },
-    "per_app": {
-      "app1-subway-accessibility": {
-        "autark": {
-          "num_trials": 2,
-          "avg_code_lines": 149.5,
-          "avg_source_files": 1.0,
-          "avg_dependencies": 2.0,
-          "avg_cyclomatic": 27.5,
-          "avg_cognitive": 19.0,
-          "avg_max_nesting": 4.0,
-          "avg_num_functions": 3.5,
-          "avg_function_length": 55.55,
-          "avg_comment_density": 0.09,
-          "avg_any_types": 0.0,
-          "avg_imports": 2.0,
-          "avg_magic_numbers": 1.0,
-          "avg_duplicate_ratio": 0.04
+    "per_cohort": {
+      "opus-4.6": {
+        "overall": {
+          "general": {
+            "num_trials": 5,
+            "avg_code_lines": 598.0,
+            "avg_source_files": 6.4,
+            "avg_dependencies": 5.2,
+            "avg_cyclomatic": 83.2,
+            "avg_cognitive": 213.6,
+            "avg_max_nesting": 6.4,
+            "avg_num_functions": 48.6,
+            "avg_function_length": 19.12,
+            "avg_comment_density": 0.08,
+            "avg_any_types": 12.0,
+            "avg_imports": 15.8,
+            "avg_magic_numbers": 53.4,
+            "avg_duplicate_ratio": 0.12
+          },
+          "autark": {
+            "num_trials": 5,
+            "avg_code_lines": 151.0,
+            "avg_source_files": 1.0,
+            "avg_dependencies": 3.0,
+            "avg_cyclomatic": 19.6,
+            "avg_cognitive": 29.0,
+            "avg_max_nesting": 4.8,
+            "avg_num_functions": 6.2,
+            "avg_function_length": 38.64,
+            "avg_comment_density": 0.08,
+            "avg_any_types": 1.0,
+            "avg_imports": 2.8,
+            "avg_magic_numbers": 1.4,
+            "avg_duplicate_ratio": 0.03
+          }
         },
-        "general": {
-          "num_trials": 1,
-          "avg_code_lines": 331.0,
-          "avg_source_files": 4.0,
-          "avg_dependencies": 2.0,
-          "avg_cyclomatic": 45.0,
-          "avg_cognitive": 101.0,
-          "avg_max_nesting": 7.0,
-          "avg_num_functions": 34.0,
-          "avg_function_length": 15.8,
-          "avg_comment_density": 0.07,
-          "avg_any_types": 0.0,
-          "avg_imports": 11.0,
-          "avg_magic_numbers": 27.0,
-          "avg_duplicate_ratio": 0.08
+        "per_app": {
+          "app1-subway-accessibility": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 331.0,
+              "avg_source_files": 4.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 45.0,
+              "avg_cognitive": 101.0,
+              "avg_max_nesting": 7.0,
+              "avg_num_functions": 34.0,
+              "avg_function_length": 15.8,
+              "avg_comment_density": 0.07,
+              "avg_any_types": 0.0,
+              "avg_imports": 11.0,
+              "avg_magic_numbers": 27.0,
+              "avg_duplicate_ratio": 0.08
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 133.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 18.0,
+              "avg_cognitive": 12.0,
+              "avg_max_nesting": 4.0,
+              "avg_num_functions": 3.0,
+              "avg_function_length": 57.3,
+              "avg_comment_density": 0.09,
+              "avg_any_types": 0.0,
+              "avg_imports": 2.0,
+              "avg_magic_numbers": 1.0,
+              "avg_duplicate_ratio": 0.03
+            }
+          },
+          "app2-noise-pollution": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 685.0,
+              "avg_source_files": 6.0,
+              "avg_dependencies": 10.0,
+              "avg_cyclomatic": 142.0,
+              "avg_cognitive": 348.0,
+              "avg_max_nesting": 6.0,
+              "avg_num_functions": 57.0,
+              "avg_function_length": 23.8,
+              "avg_comment_density": 0.09,
+              "avg_any_types": 27.0,
+              "avg_imports": 12.0,
+              "avg_magic_numbers": 84.0,
+              "avg_duplicate_ratio": 0.15
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 144.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 11.0,
+              "avg_cognitive": 21.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 6.0,
+              "avg_function_length": 30.5,
+              "avg_comment_density": 0.08,
+              "avg_any_types": 0.0,
+              "avg_imports": 3.0,
+              "avg_magic_numbers": 2.0,
+              "avg_duplicate_ratio": 0.02
+            }
+          },
+          "app3-noise-scatterplot": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 825.0,
+              "avg_source_files": 8.0,
+              "avg_dependencies": 9.0,
+              "avg_cyclomatic": 131.0,
+              "avg_cognitive": 346.0,
+              "avg_max_nesting": 7.0,
+              "avg_num_functions": 65.0,
+              "avg_function_length": 21.4,
+              "avg_comment_density": 0.07,
+              "avg_any_types": 32.0,
+              "avg_imports": 26.0,
+              "avg_magic_numbers": 80.0,
+              "avg_duplicate_ratio": 0.12
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 160.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 3.0,
+              "avg_cyclomatic": 23.0,
+              "avg_cognitive": 20.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 5.0,
+              "avg_function_length": 41.4,
+              "avg_comment_density": 0.09,
+              "avg_any_types": 5.0,
+              "avg_imports": 3.0,
+              "avg_magic_numbers": 3.0,
+              "avg_duplicate_ratio": 0.03
+            }
+          },
+          "app4-street-network": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 600.0,
+              "avg_source_files": 9.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 45.0,
+              "avg_cognitive": 126.0,
+              "avg_max_nesting": 6.0,
+              "avg_num_functions": 32.0,
+              "avg_function_length": 21.9,
+              "avg_comment_density": 0.06,
+              "avg_any_types": 0.0,
+              "avg_imports": 18.0,
+              "avg_magic_numbers": 37.0,
+              "avg_duplicate_ratio": 0.15
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 193.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 3.0,
+              "avg_cyclomatic": 30.0,
+              "avg_cognitive": 61.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 13.0,
+              "avg_function_length": 25.5,
+              "avg_comment_density": 0.08,
+              "avg_any_types": 0.0,
+              "avg_imports": 4.0,
+              "avg_magic_numbers": 0.0,
+              "avg_duplicate_ratio": 0.07
+            }
+          },
+          "app5-subway-picking": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 549.0,
+              "avg_source_files": 5.0,
+              "avg_dependencies": 3.0,
+              "avg_cyclomatic": 53.0,
+              "avg_cognitive": 147.0,
+              "avg_max_nesting": 6.0,
+              "avg_num_functions": 55.0,
+              "avg_function_length": 12.7,
+              "avg_comment_density": 0.08,
+              "avg_any_types": 1.0,
+              "avg_imports": 12.0,
+              "avg_magic_numbers": 39.0,
+              "avg_duplicate_ratio": 0.12
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 125.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 5.0,
+              "avg_cyclomatic": 16.0,
+              "avg_cognitive": 31.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 4.0,
+              "avg_function_length": 38.5,
+              "avg_comment_density": 0.09,
+              "avg_any_types": 0.0,
+              "avg_imports": 2.0,
+              "avg_magic_numbers": 1.0,
+              "avg_duplicate_ratio": 0.01
+            }
+          }
         }
       },
-      "app2-noise-pollution": {
-        "autark": {
-          "num_trials": 1,
-          "avg_code_lines": 144.0,
-          "avg_source_files": 1.0,
-          "avg_dependencies": 2.0,
-          "avg_cyclomatic": 11.0,
-          "avg_cognitive": 21.0,
-          "avg_max_nesting": 5.0,
-          "avg_num_functions": 6.0,
-          "avg_function_length": 30.5,
-          "avg_comment_density": 0.08,
-          "avg_any_types": 0.0,
-          "avg_imports": 3.0,
-          "avg_magic_numbers": 2.0,
-          "avg_duplicate_ratio": 0.02
+      "opus-4.8": {
+        "overall": {
+          "general": {
+            "num_trials": 5,
+            "avg_code_lines": 786.6,
+            "avg_source_files": 7.2,
+            "avg_dependencies": 3.6,
+            "avg_cyclomatic": 113.6,
+            "avg_cognitive": 265.6,
+            "avg_max_nesting": 5.2,
+            "avg_num_functions": 64.6,
+            "avg_function_length": 17.98,
+            "avg_comment_density": 0.09,
+            "avg_any_types": 0.0,
+            "avg_imports": 16.0,
+            "avg_magic_numbers": 74.4,
+            "avg_duplicate_ratio": 0.1
+          },
+          "autark": {
+            "num_trials": 5,
+            "avg_code_lines": 222.4,
+            "avg_source_files": 1.0,
+            "avg_dependencies": 2.4,
+            "avg_cyclomatic": 27.0,
+            "avg_cognitive": 42.6,
+            "avg_max_nesting": 4.2,
+            "avg_num_functions": 11.2,
+            "avg_function_length": 28.96,
+            "avg_comment_density": 0.17,
+            "avg_any_types": 0.4,
+            "avg_imports": 3.4,
+            "avg_magic_numbers": 3.2,
+            "avg_duplicate_ratio": 0.05
+          }
         },
-        "general": {
-          "num_trials": 1,
-          "avg_code_lines": 685.0,
-          "avg_source_files": 6.0,
-          "avg_dependencies": 10.0,
-          "avg_cyclomatic": 124.0,
-          "avg_cognitive": 287.0,
-          "avg_max_nesting": 6.0,
-          "avg_num_functions": 57.0,
-          "avg_function_length": 23.8,
-          "avg_comment_density": 0.09,
-          "avg_any_types": 24.0,
-          "avg_imports": 12.0,
-          "avg_magic_numbers": 79.0,
-          "avg_duplicate_ratio": 0.15
-        }
-      },
-      "app3-noise-scatterplot": {
-        "autark": {
-          "num_trials": 2,
-          "avg_code_lines": 178.5,
-          "avg_source_files": 1.0,
-          "avg_dependencies": 3.5,
-          "avg_cyclomatic": 26.0,
-          "avg_cognitive": 36.5,
-          "avg_max_nesting": 5.0,
-          "avg_num_functions": 6.5,
-          "avg_function_length": 38.4,
-          "avg_comment_density": 0.09,
-          "avg_any_types": 2.5,
-          "avg_imports": 3.0,
-          "avg_magic_numbers": 3.5,
-          "avg_duplicate_ratio": 0.06
-        },
-        "general": {
-          "num_trials": 2,
-          "avg_code_lines": 735.0,
-          "avg_source_files": 7.5,
-          "avg_dependencies": 12.0,
-          "avg_cyclomatic": 114.5,
-          "avg_cognitive": 286.0,
-          "avg_max_nesting": 7.0,
-          "avg_num_functions": 58.0,
-          "avg_function_length": 20.6,
-          "avg_comment_density": 0.07,
-          "avg_any_types": 16.0,
-          "avg_imports": 23.0,
-          "avg_magic_numbers": 85.5,
-          "avg_duplicate_ratio": 0.1
-        }
-      },
-      "app4-street-network": {
-        "autark": {
-          "num_trials": 1,
-          "avg_code_lines": 193.0,
-          "avg_source_files": 1.0,
-          "avg_dependencies": 3.0,
-          "avg_cyclomatic": 30.0,
-          "avg_cognitive": 61.0,
-          "avg_max_nesting": 5.0,
-          "avg_num_functions": 13.0,
-          "avg_function_length": 25.5,
-          "avg_comment_density": 0.08,
-          "avg_any_types": 0.0,
-          "avg_imports": 4.0,
-          "avg_magic_numbers": 0.0,
-          "avg_duplicate_ratio": 0.07
-        },
-        "general": {
-          "num_trials": 1,
-          "avg_code_lines": 600.0,
-          "avg_source_files": 9.0,
-          "avg_dependencies": 2.0,
-          "avg_cyclomatic": 45.0,
-          "avg_cognitive": 126.0,
-          "avg_max_nesting": 6.0,
-          "avg_num_functions": 32.0,
-          "avg_function_length": 21.9,
-          "avg_comment_density": 0.06,
-          "avg_any_types": 0.0,
-          "avg_imports": 18.0,
-          "avg_magic_numbers": 37.0,
-          "avg_duplicate_ratio": 0.15
-        }
-      },
-      "app5-subway-picking": {
-        "autark": {
-          "num_trials": 2,
-          "avg_code_lines": 114.5,
-          "avg_source_files": 1.0,
-          "avg_dependencies": 4.5,
-          "avg_cyclomatic": 13.0,
-          "avg_cognitive": 22.0,
-          "avg_max_nesting": 4.5,
-          "avg_num_functions": 4.0,
-          "avg_function_length": 36.15,
-          "avg_comment_density": 0.09,
-          "avg_any_types": 0.0,
-          "avg_imports": 2.0,
-          "avg_magic_numbers": 1.0,
-          "avg_duplicate_ratio": 0.01
-        },
-        "general": {
-          "num_trials": 2,
-          "avg_code_lines": 523.5,
-          "avg_source_files": 4.0,
-          "avg_dependencies": 2.5,
-          "avg_cyclomatic": 71.5,
-          "avg_cognitive": 183.0,
-          "avg_max_nesting": 6.0,
-          "avg_num_functions": 55.0,
-          "avg_function_length": 14.0,
-          "avg_comment_density": 0.08,
-          "avg_any_types": 2.0,
-          "avg_imports": 8.5,
-          "avg_magic_numbers": 46.5,
-          "avg_duplicate_ratio": 0.12
+        "per_app": {
+          "app1-subway-accessibility": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 625.0,
+              "avg_source_files": 6.0,
+              "avg_dependencies": 4.0,
+              "avg_cyclomatic": 83.0,
+              "avg_cognitive": 205.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 55.0,
+              "avg_function_length": 15.7,
+              "avg_comment_density": 0.09,
+              "avg_any_types": 0.0,
+              "avg_imports": 14.0,
+              "avg_magic_numbers": 67.0,
+              "avg_duplicate_ratio": 0.09
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 176.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 27.0,
+              "avg_cognitive": 27.0,
+              "avg_max_nesting": 4.0,
+              "avg_num_functions": 8.0,
+              "avg_function_length": 27.8,
+              "avg_comment_density": 0.12,
+              "avg_any_types": 1.0,
+              "avg_imports": 3.0,
+              "avg_magic_numbers": 1.0,
+              "avg_duplicate_ratio": 0.03
+            }
+          },
+          "app2-noise-pollution": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 733.0,
+              "avg_source_files": 6.0,
+              "avg_dependencies": 4.0,
+              "avg_cyclomatic": 115.0,
+              "avg_cognitive": 254.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 62.0,
+              "avg_function_length": 18.7,
+              "avg_comment_density": 0.1,
+              "avg_any_types": 0.0,
+              "avg_imports": 14.0,
+              "avg_magic_numbers": 72.0,
+              "avg_duplicate_ratio": 0.09
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 179.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 19.0,
+              "avg_cognitive": 34.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 6.0,
+              "avg_function_length": 38.2,
+              "avg_comment_density": 0.23,
+              "avg_any_types": 0.0,
+              "avg_imports": 3.0,
+              "avg_magic_numbers": 2.0,
+              "avg_duplicate_ratio": 0.06
+            }
+          },
+          "app3-noise-scatterplot": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 966.0,
+              "avg_source_files": 7.0,
+              "avg_dependencies": 4.0,
+              "avg_cyclomatic": 147.0,
+              "avg_cognitive": 327.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 79.0,
+              "avg_function_length": 19.9,
+              "avg_comment_density": 0.11,
+              "avg_any_types": 0.0,
+              "avg_imports": 16.0,
+              "avg_magic_numbers": 94.0,
+              "avg_duplicate_ratio": 0.09
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 287.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 3.0,
+              "avg_cyclomatic": 34.0,
+              "avg_cognitive": 78.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 16.0,
+              "avg_function_length": 25.6,
+              "avg_comment_density": 0.2,
+              "avg_any_types": 0.0,
+              "avg_imports": 4.0,
+              "avg_magic_numbers": 11.0,
+              "avg_duplicate_ratio": 0.06
+            }
+          },
+          "app4-street-network": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 846.0,
+              "avg_source_files": 11.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 109.0,
+              "avg_cognitive": 287.0,
+              "avg_max_nesting": 6.0,
+              "avg_num_functions": 63.0,
+              "avg_function_length": 16.5,
+              "avg_comment_density": 0.07,
+              "avg_any_types": 0.0,
+              "avg_imports": 22.0,
+              "avg_magic_numbers": 58.0,
+              "avg_duplicate_ratio": 0.12
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 252.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 3.0,
+              "avg_cyclomatic": 22.0,
+              "avg_cognitive": 40.0,
+              "avg_max_nesting": 4.0,
+              "avg_num_functions": 16.0,
+              "avg_function_length": 24.8,
+              "avg_comment_density": 0.16,
+              "avg_any_types": 0.0,
+              "avg_imports": 4.0,
+              "avg_magic_numbers": 1.0,
+              "avg_duplicate_ratio": 0.07
+            }
+          },
+          "app5-subway-picking": {
+            "general": {
+              "num_trials": 1,
+              "avg_code_lines": 763.0,
+              "avg_source_files": 6.0,
+              "avg_dependencies": 4.0,
+              "avg_cyclomatic": 114.0,
+              "avg_cognitive": 255.0,
+              "avg_max_nesting": 5.0,
+              "avg_num_functions": 64.0,
+              "avg_function_length": 19.1,
+              "avg_comment_density": 0.1,
+              "avg_any_types": 0.0,
+              "avg_imports": 14.0,
+              "avg_magic_numbers": 81.0,
+              "avg_duplicate_ratio": 0.1
+            },
+            "autark": {
+              "num_trials": 1,
+              "avg_code_lines": 218.0,
+              "avg_source_files": 1.0,
+              "avg_dependencies": 2.0,
+              "avg_cyclomatic": 33.0,
+              "avg_cognitive": 34.0,
+              "avg_max_nesting": 3.0,
+              "avg_num_functions": 10.0,
+              "avg_function_length": 28.4,
+              "avg_comment_density": 0.15,
+              "avg_any_types": 1.0,
+              "avg_imports": 3.0,
+              "avg_magic_numbers": 1.0,
+              "avg_duplicate_ratio": 0.04
+            }
+          }
         }
       }
     }

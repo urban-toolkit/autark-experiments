@@ -3,3 +3,4 @@ package-lock.json
 /data/
 .claude/
 trials/_backup/
+dist/

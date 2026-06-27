@@ -335,11 +335,13 @@ def _strip_strings_and_comments(source: str) -> str:
 
 # ── Per-trial profiler ────────────────────────────────────────────────────────
 
-def profile_trial(condition_dir: str, app: str, trial: str, condition: str) -> dict[str, Any]:
+def profile_trial(condition_dir: str, app: str, trial: str, condition: str,
+                  cohort: str = "", model: str = "") -> dict[str, Any]:
     """Compute all metrics for a single app/trial/condition output directory."""
     output_dir = os.path.join(condition_dir, "output")
     if not os.path.isdir(output_dir):
-        return {"error": f"No output directory found at {output_dir}", "app": app, "trial": trial, "condition": condition}
+        return {"error": f"No output directory found at {output_dir}",
+                "cohort": cohort, "app": app, "trial": trial, "condition": condition}
 
     # Gather source files
     source_files = list(iter_source_files(output_dir, SOURCE_EXTENSIONS))
@@ -373,15 +375,20 @@ def profile_trial(condition_dir: str, app: str, trial: str, condition: str) -> d
     num_dev_deps = count_dev_dependencies(output_dir)
 
     # ── Complexity ──
-    cc = cyclomatic_complexity(combined_source)
-    cog = cognitive_complexity(combined_source)
-    max_nest = max_nesting_depth(combined_source)
-
-    # Per-file complexity
+    # NOTE: these metrics are aggregated PER FILE rather than over the
+    # concatenated source. Computing them on the joined text is fragile: the
+    # string/comment-stripping regex can match across file boundaries when the
+    # combined text has an unbalanced number of quote characters, wiping out
+    # large spans of code and producing implausibly low values. Per-file
+    # aggregation is robust and matches the intent of the original metrics.
     per_file_cc = {}
     for fp, content in file_contents.items():
         rel = os.path.relpath(fp, output_dir)
         per_file_cc[rel] = cyclomatic_complexity(content)
+
+    cc = 1 + sum(v - 1 for v in per_file_cc.values())
+    cog = sum(cognitive_complexity(c) for c in file_contents.values())
+    max_nest = max((max_nesting_depth(c) for c in file_contents.values()), default=0)
 
     # ── Maintainability ──
     all_functions: list[dict] = []
@@ -401,12 +408,12 @@ def profile_trial(condition_dir: str, app: str, trial: str, condition: str) -> d
     ) if all_functions else None
 
     comment_density = line_stats["comment"] / line_stats["code"] if line_stats["code"] > 0 else 0
-    any_count = count_any_types(combined_source)
+    any_count = sum(count_any_types(c) for c in file_contents.values())  # per-file (see note above)
 
     # ── Coupling & Readability ──
     imports = count_imports(combined_source)
     exports = count_exports(combined_source)
-    magic = count_magic_numbers(combined_source)
+    magic = sum(count_magic_numbers(c) for c in file_contents.values())  # per-file (see note above)
     max_ll = max_line_length(combined_source)
     avg_ll = avg_line_length(combined_source)
     dup_ratio = duplicate_line_ratio(combined_lines)
@@ -422,6 +429,8 @@ def profile_trial(condition_dir: str, app: str, trial: str, condition: str) -> d
             pass
 
     return {
+        "cohort": cohort,
+        "model": model,
         "app": app,
         "trial": trial,
         "condition": condition,
@@ -470,56 +479,60 @@ def profile_trial(condition_dir: str, app: str, trial: str, condition: str) -> d
 
 # ── Aggregation & Comparison ─────────────────────────────────────────────────
 
-def compute_summary(results: list[dict]) -> dict:
-    """Compute aggregate summary comparing autark vs general, overall and per-app."""
-    valid = [r for r in results if "error" not in r]
-
+def _summarize(trials: list[dict]) -> dict:
     def avg(vals):
         return round(sum(vals) / len(vals), 2) if vals else 0
+    return {
+        "num_trials": len(trials),
+        "avg_code_lines": avg([t["size"]["code_lines"] for t in trials]),
+        "avg_source_files": avg([t["size"]["source_files"] for t in trials]),
+        "avg_dependencies": avg([t["size"]["dependencies"] for t in trials]),
+        "avg_cyclomatic": avg([t["complexity"]["cyclomatic"] for t in trials]),
+        "avg_cognitive": avg([t["complexity"]["cognitive"] for t in trials]),
+        "avg_max_nesting": avg([t["complexity"]["max_nesting_depth"] for t in trials]),
+        "avg_num_functions": avg([t["maintainability"]["num_functions"] for t in trials]),
+        "avg_function_length": avg([t["maintainability"]["avg_function_length"] for t in trials]),
+        "avg_comment_density": avg([t["maintainability"]["comment_density"] for t in trials]),
+        "avg_any_types": avg([t["maintainability"]["any_type_count"] for t in trials]),
+        "avg_imports": avg([t["readability"]["import_count"] for t in trials]),
+        "avg_magic_numbers": avg([t["readability"]["magic_number_count"] for t in trials]),
+        "avg_duplicate_ratio": avg([t["readability"]["duplicate_line_ratio"] for t in trials]),
+    }
 
-    def _summarize(trials: list[dict]) -> dict:
-        return {
-            "num_trials": len(trials),
-            "avg_code_lines": avg([t["size"]["code_lines"] for t in trials]),
-            "avg_source_files": avg([t["size"]["source_files"] for t in trials]),
-            "avg_dependencies": avg([t["size"]["dependencies"] for t in trials]),
-            "avg_cyclomatic": avg([t["complexity"]["cyclomatic"] for t in trials]),
-            "avg_cognitive": avg([t["complexity"]["cognitive"] for t in trials]),
-            "avg_max_nesting": avg([t["complexity"]["max_nesting_depth"] for t in trials]),
-            "avg_num_functions": avg([t["maintainability"]["num_functions"] for t in trials]),
-            "avg_function_length": avg([t["maintainability"]["avg_function_length"] for t in trials]),
-            "avg_comment_density": avg([t["maintainability"]["comment_density"] for t in trials]),
-            "avg_any_types": avg([t["maintainability"]["any_type_count"] for t in trials]),
-            "avg_imports": avg([t["readability"]["import_count"] for t in trials]),
-            "avg_magic_numbers": avg([t["readability"]["magic_number_count"] for t in trials]),
-            "avg_duplicate_ratio": avg([t["readability"]["duplicate_line_ratio"] for t in trials]),
-        }
 
-    # Overall by condition
+def _summarize_cohort(valid: list[dict]) -> dict:
+    """Overall (by condition) and per-app (by condition) summary for one cohort."""
     by_condition: dict[str, list[dict]] = defaultdict(list)
     for r in valid:
         by_condition[r["condition"]].append(r)
 
-    summary: dict[str, Any] = {
-        "overall": {cond: _summarize(trials) for cond, trials in by_condition.items()},
-    }
-
-    # Per-app by condition
     by_app: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
     for r in valid:
         by_app[r["app"]][r["condition"]].append(r)
 
-    summary["per_app"] = {
-        app: {cond: _summarize(trials) for cond, trials in conds.items()}
-        for app, conds in sorted(by_app.items())
+    return {
+        "overall": {cond: _summarize(trials) for cond, trials in by_condition.items()},
+        "per_app": {
+            app: {cond: _summarize(trials) for cond, trials in conds.items()}
+            for app, conds in sorted(by_app.items())
+        },
     }
 
-    return summary
+
+def compute_summary(results: list[dict]) -> dict:
+    """Compute per-cohort summaries comparing autark vs general."""
+    valid = [r for r in results if "error" not in r]
+    by_cohort: dict[str, list[dict]] = defaultdict(list)
+    for r in valid:
+        by_cohort[r.get("cohort", "")].append(r)
+    return {"per_cohort": {c: _summarize_cohort(rs) for c, rs in by_cohort.items()}}
 
 
 def flatten_for_csv(result: dict) -> dict:
     """Flatten a trial result dict into a single-level dict suitable for CSV."""
     flat = {
+        "cohort": result.get("cohort", ""),
+        "model": result.get("model", ""),
         "app": result["app"],
         "trial": result["trial"],
         "condition": result["condition"],
@@ -568,7 +581,7 @@ def print_report(results: list[dict], summary: dict):
             continue
 
         print(f"\n{'─' * 72}")
-        print(f"  App: {r['app']}  |  Trial: {r['trial']}  |  Condition: {r['condition'].upper()}")
+        print(f"  [{r.get('cohort', '?')}]  App: {r['app']}  |  Trial: {r['trial']}  |  Condition: {r['condition'].upper()}")
         if r.get("meta", {}).get("duration_seconds"):
             dur = r["meta"]["duration_seconds"]
             print(f"  Generation time: {dur // 60}m {dur % 60}s")
@@ -643,32 +656,66 @@ def print_report(results: list[dict], summary: dict):
                 delta_str = "N/A"
             print(f"  {label:<26} {bv:>10} {av:>10} {delta_str:>10}")
 
-    print(f"\n{'=' * 72}")
-    print(f"  OVERALL SUMMARY")
-    print(f"{'=' * 72}")
-    _print_comparison("All apps (averaged)", summary.get("overall", {}))
-
-    if "per_app" in summary:
+    for cohort, csum in sorted(summary.get("per_cohort", {}).items()):
         print(f"\n{'=' * 72}")
-        print(f"  PER-APP SUMMARY")
+        print(f"  COHORT: {cohort}  —  OVERALL SUMMARY")
         print(f"{'=' * 72}")
-        for app_name, app_section in sorted(summary["per_app"].items()):
+        _print_comparison("All apps (averaged)", csum.get("overall", {}))
+
+        print(f"\n{'─' * 72}")
+        print(f"  COHORT: {cohort}  —  PER-APP SUMMARY")
+        print(f"{'─' * 72}")
+        for app_name, app_section in sorted(csum.get("per_app", {}).items()):
             _print_comparison(app_name, app_section)
 
     print()
 
 
+# ── Cohorts ───────────────────────────────────────────────────────────────────
+# A cohort is a set of trials produced by one model generation. For each app we
+# pin the exact trial that belongs to the cohort, so the comparison is clean and
+# reproducible (the trials directory also holds re-runs and other models).
+#
+#   opus-4.6 — the original baseline reported in the paper (March 2026). Only the
+#              `t1` trials were generated with Opus 4.6.
+#   opus-4.8 — the re-run with the newer model (June 2026). app1/2/3/5 use `t3`;
+#              app4 only has up to `t2`. (A `utk` condition exists in some of
+#              these trials but is ignored: only `autark`/`general` are profiled.)
+COHORTS: dict[str, dict[str, str]] = {
+    "opus-4.6": {
+        "app1-subway-accessibility": "t1",
+        "app2-noise-pollution": "t1",
+        "app3-noise-scatterplot": "t1",
+        "app4-street-network": "t1",
+        "app5-subway-picking": "t1",
+    },
+    "opus-4.8": {
+        "app1-subway-accessibility": "t3",
+        "app2-noise-pollution": "t3",
+        "app3-noise-scatterplot": "t3",
+        "app4-street-network": "t2",
+        "app5-subway-picking": "t3",
+    },
+}
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    here = os.path.dirname(os.path.abspath(__file__))
     parser = argparse.ArgumentParser(description="Code quality profiler for Autark experiments")
     parser.add_argument(
-        "--trials-dir",
-        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "trials"),
+        "--trials-dir", default=os.path.join(here, "trials"),
         help="Path to the trials directory (default: ./trials)",
     )
-    parser.add_argument("--output", default=None, help="Write full JSON results to this file")
-    parser.add_argument("--csv", default=None, help="Write flat CSV results to this file")
+    parser.add_argument(
+        "--output", default=os.path.join(here, "metrics.json"),
+        help="Write full JSON results to this file (default: ./metrics.json)",
+    )
+    parser.add_argument(
+        "--csv", default=os.path.join(here, "metrics.csv"),
+        help="Write flat CSV results to this file (default: ./metrics.csv)",
+    )
     args = parser.parse_args()
 
     trials_dir = args.trials_dir
@@ -676,81 +723,58 @@ def main():
         print(f"Error: trials directory not found: {trials_dir}", file=sys.stderr)
         sys.exit(1)
 
-    # Discover apps → trials → conditions
-    app_dirs = sorted([
-        d for d in os.listdir(trials_dir)
-        if os.path.isdir(os.path.join(trials_dir, d)) and d not in SKIP_APP_DIRS
-    ])
-
-    if not app_dirs:
-        print("No app directories found.", file=sys.stderr)
-        sys.exit(1)
-
-    # Profile each app/trial/condition
+    # Profile the pinned (cohort, app, trial, condition) cells
     results = []
-    for app in app_dirs:
-        app_path = os.path.join(trials_dir, app)
-        trial_names = sorted([
-            t for t in os.listdir(app_path)
-            if os.path.isdir(os.path.join(app_path, t)) and t.startswith("t")
-        ])
-        for trial in trial_names:
-            trial_path = os.path.join(app_path, trial)
-            for condition in sorted(os.listdir(trial_path)):
+    for cohort, app_trials in COHORTS.items():
+        for app, trial in app_trials.items():
+            trial_path = os.path.join(trials_dir, app, trial)
+            for condition in CONDITION_DIRS:  # autark, general (utk is ignored)
                 cond_path = os.path.join(trial_path, condition)
-                if not os.path.isdir(cond_path) or condition not in CONDITION_DIRS:
+                if not os.path.isdir(cond_path):
                     continue
-                result = profile_trial(cond_path, app, trial, condition)
-                results.append(result)
+                results.append(profile_trial(cond_path, app, trial, condition, cohort, cohort))
 
-    # Compute summary
     summary = compute_summary(results)
-
-    # Print report
     print_report(results, summary)
 
-    # Write JSON output
-    if args.output:
-        output_data = {"trials": results, "summary": summary}
-        with open(args.output, "w") as f:
-            json.dump(output_data, f, indent=2)
-        print(f"  JSON results written to: {args.output}")
+    # JSON
+    with open(args.output, "w") as f:
+        json.dump({"cohorts": COHORTS, "trials": results, "summary": summary}, f, indent=2)
+    print(f"  JSON results written to: {args.output}")
 
-    # Write CSV output
-    if args.csv:
-        valid = [r for r in results if "error" not in r]
-        if valid:
-            rows = [flatten_for_csv(r) for r in valid]
-            fieldnames = list(rows[0].keys())
-            numeric_fields = [f for f in fieldnames if f not in ("app", "trial", "condition")]
+    # CSV: per-trial rows, then per-(cohort, app, condition) and per-(cohort, condition) averages
+    valid = [r for r in results if "error" not in r]
+    if valid:
+        rows = [flatten_for_csv(r) for r in valid]
+        fieldnames = list(rows[0].keys())
+        key_fields = ("cohort", "model", "app", "trial", "condition")
+        numeric_fields = [f for f in fieldnames if f not in key_fields]
 
-            # Compute average rows grouped by (app, condition) and overall condition
-            def _avg_row(group: list[dict], app_label: str, trial_label: str, condition: str) -> dict:
-                avg = {"app": app_label, "trial": trial_label, "condition": condition}
-                for f in numeric_fields:
-                    vals = [r[f] for r in group if r[f] != ""]
-                    avg[f] = round(sum(vals) / len(vals), 2) if vals else ""
-                return avg
+        def _avg_row(group, cohort, app_label, trial_label, condition):
+            row = {"cohort": cohort, "model": cohort, "app": app_label,
+                   "trial": trial_label, "condition": condition}
+            for f in numeric_fields:
+                vals = [r[f] for r in group if r[f] != ""]
+                row[f] = round(sum(vals) / len(vals), 2) if vals else ""
+            return row
 
-            # Group by (app, condition)
-            from itertools import groupby
-            avg_rows = []
-            sorted_rows = sorted(rows, key=lambda r: (r["app"], r["condition"]))
-            for (app, cond), grp in groupby(sorted_rows, key=lambda r: (r["app"], r["condition"])):
-                grp_list = list(grp)
-                avg_rows.append(_avg_row(grp_list, app, "avg", cond))
+        from itertools import groupby
+        avg_rows = []
+        for (cohort, app, cond), grp in groupby(
+                sorted(rows, key=lambda r: (r["cohort"], r["app"], r["condition"])),
+                key=lambda r: (r["cohort"], r["app"], r["condition"])):
+            avg_rows.append(_avg_row(list(grp), cohort, app, "avg", cond))
+        for (cohort, cond), grp in groupby(
+                sorted(rows, key=lambda r: (r["cohort"], r["condition"])),
+                key=lambda r: (r["cohort"], r["condition"])):
+            avg_rows.append(_avg_row(list(grp), cohort, "ALL", "avg", cond))
 
-            # Overall by condition
-            for cond in sorted(set(r["condition"] for r in rows)):
-                grp_list = [r for r in rows if r["condition"] == cond]
-                avg_rows.append(_avg_row(grp_list, "ALL", "avg", cond))
-
-            with open(args.csv, "w", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(rows)
-                writer.writerows(avg_rows)
-            print(f"  CSV results written to: {args.csv}")
+        with open(args.csv, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+            writer.writerows(avg_rows)
+        print(f"  CSV results written to: {args.csv}")
 
 
 if __name__ == "__main__":
