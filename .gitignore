@@ -1,6 +1,7 @@
 node_modules/
 package-lock.json
 /data/
+**/utk/output/data/
 .claude/
 trials/_backup/
 dist/
