@@ -119,6 +119,19 @@ count and area statistics.
   in the same order, so the scatterplot still shows one circle per building with
   noise on x and area on y, with brushing/clicking highlighting the right
   buildings.
+- **Per-knot colormap field is `color_map` (not `colorMap`).** The UTK frontend
+  reads the colormap from the snake_case field `color_map`; the camelCase
+  `colorMap` shown in some docs/examples is silently ignored, so the shader falls
+  back to its default `interpolateReds` — making *every* layer render solid red.
+  Each knot here sets `color_map`.
+- **Only `rgb(...)`-returning d3 color maps work.** UTK parses the d3 interpolator
+  output with `match(/\d+/g)`, which assumes an `"rgb(r,g,b)"` string. Maps that
+  return hex (`interpolateInferno`, `interpolateViridis`, `interpolateMagma`,
+  `interpolatePlasma`) build a malformed colormap texture. Buildings therefore
+  use **`interpolateYlOrRd`** (a sequential ramp returning rgb) for a clear
+  pale-yellow → deep-red low-to-high noise gradient; base layers use grey
+  (surface), blue (water), green (parks), and purple (roads) — all distinct and
+  non-red.
 
 ## File overview
 

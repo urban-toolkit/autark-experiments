@@ -110,14 +110,25 @@ The data pipeline is [`build_data.py`](./build_data.py). It:
      unconditionally (it crashes on a layer with no abstract data), each base
      layer is given a **constant** OBJECTS-level abstract value via a generated
      `<layer>Theme.json` + `<layer>_joined.json`. The constant maps through the
-     colorMap to a flat mid-tone (grey ground, blue water, green parks, grey
-     roads); buildings remain the only data-driven (noise) coloring.
+     colorMap to a flat mid-tone: grey ground, blue water, green parks, purple
+     roads; buildings are the only data-driven (noise) coloring.
+   - **Two colorMap gotchas** are encoded in `grammar.json`: (1) the knot field
+     the frontend actually reads is snake_case **`color_map`** (camelCase
+     `colorMap` is silently ignored → default `interpolateReds` → everything
+     red); (2) the frontend parses the d3 interpolator's output with `/\d+/g`,
+     which only works for maps that return `rgb(...)` strings — **hex-returning
+     maps (`interpolateInferno`/`viridis`/`magma`/`plasma`/`turbo`) build a
+     malformed, too-short colormap texture** (`texImage2D: ArrayBufferView not
+     big enough`) and never color. So every `color_map` is an rgb()-returning
+     map (Greys/Blues/Greens/Purples for the base layers, **`YlOrRd`** for the
+     buildings — yellow = quiet → red = loud).
    - water/parks/roads ship without the per-triangle `ids` buffer that picking
      uses to identify elements, so the build generates one
      (`<layer>_ids.data`), making each OSM feature (water body / park / road
      segment) an individually selectable element.
    - Buildings use `["SMOOTH_COLOR_MAP_TEX", "PICKING"]`
-     (`SMOOTH_COLOR_MAP_TEX` is the `BuildingsLayer` auxiliary shader).
+     (`SMOOTH_COLOR_MAP_TEX` is the `BuildingsLayer` auxiliary shader) with the
+     `YlOrRd` noise gradient.
    - A clicked/picked element is highlighted in blue by UTK's picking shader.
 
 To rebuild:

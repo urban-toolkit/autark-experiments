@@ -492,27 +492,45 @@ def configure_layers_and_grammar():
                     }
                 ],
                 # Base-layer knots carry a CONSTANT abstract value so the
-                # SMOOTH_COLOR_MAP shader has function data (flat mid-tone color).
+                # SMOOTH_COLOR_MAP shader has function data; the frontend
+                # normalizes a constant to 0.5, so each renders a flat
+                # color_map(0.5) mid-tone (grey ground/roads distinguished by
+                # purple roads, blue water, green parks). Buildings get a real
+                # gradient because their per-building noise is normalized against
+                # the global 0..max range.
+                #
+                # Two non-obvious UTK frontend gotchas drive the choices here:
+                #   1. The per-knot colormap field is **color_map** (snake_case),
+                #      NOT "colorMap" as the docs/examples show. An unknown field
+                #      is ignored and the shader falls back to its default
+                #      "interpolateReds" -> every layer renders solid red.
+                #   2. ColorMap.getColor parses the d3 interpolator output with
+                #      match(/\d+/g), which only works for "rgb(r,g,b)" strings.
+                #      d3 maps that return HEX (interpolateInferno/Viridis/Magma/
+                #      Plasma) yield a malformed colormap texture. So buildings use
+                #      interpolateYlOrRd (an rgb-returning sequential ramp) for a
+                #      clear low->high gradient, and every knot uses an
+                #      rgb-returning map.
                 "knots": [
-                    {"id": "basesurface", "colorMap": "interpolateGreys",
+                    {"id": "basesurface", "color_map": "interpolateGreys",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "surfaceTheme", "level": "COORDINATES"},
                          "out": {"name": "surface", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "basewater", "colorMap": "interpolateBlues",
+                    {"id": "basewater", "color_map": "interpolateBlues",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "waterTheme", "level": "COORDINATES"},
                          "out": {"name": "water", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "baseparks", "colorMap": "interpolateGreens",
+                    {"id": "baseparks", "color_map": "interpolateGreens",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "parksTheme", "level": "COORDINATES"},
                          "out": {"name": "parks", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "baseroads", "colorMap": "interpolateGreys",
+                    {"id": "baseroads", "color_map": "interpolatePurples",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "roadsTheme", "level": "COORDINATES"},
@@ -520,7 +538,7 @@ def configure_layers_and_grammar():
                          "operation": "NONE", "abstract": True}]},
                     # Per-building noise count (OBJECTS): colors buildings AND
                     # is the scatter x axis.
-                    {"id": "noiseImpact", "colorMap": "interpolateInferno",
+                    {"id": "noiseImpact", "color_map": "interpolateYlOrRd",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "noiseCount", "level": "COORDINATES"},
@@ -529,7 +547,7 @@ def configure_layers_and_grammar():
                     # Per-building footprint area (OBJECTS): scatter y axis only,
                     # carried by the lightweight areaPoints layer (NOT buildings)
                     # so the plot does not expand the 7.4M-vertex mesh again.
-                    {"id": "areaAxis", "colorMap": "interpolateViridis",
+                    {"id": "areaAxis", "color_map": "interpolateBlues",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "areaTheme", "level": "COORDINATES"},

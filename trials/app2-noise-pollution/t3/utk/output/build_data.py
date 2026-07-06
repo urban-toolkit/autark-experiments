@@ -332,35 +332,47 @@ def configure_layers_and_grammar():
                 # Base-layer knots carry a CONSTANT abstract value (an OBJECTS-level
                 # join to <layer>Theme) so the SMOOTH_COLOR_MAP shader has function
                 # data and does not crash. Constant values render each layer as a flat
-                # colorMap(0.5) mid-tone (Greys ground, blue water, green parks).
+                # color_map(0.5) mid-tone (grey ground, blue water, green parks, purple
+                # roads). TWO frontend gotchas encoded here:
+                #  1. The knot colorMap field the frontend reads is snake_case
+                #     `color_map`; `colorMap` is silently ignored -> default
+                #     `interpolateReds` -> everything renders red.
+                #  2. The frontend's getColor parses the d3 interpolator output with
+                #     /\d+/g, which only works for maps that return `rgb(...)` strings.
+                #     HEX-returning maps (inferno/viridis/magma/plasma/turbo) yield a
+                #     malformed (short) colormap texture -> "texImage2D: ArrayBufferView
+                #     not big enough" -> that layer never colors. So every color_map
+                #     here is an rgb()-returning map (Greys/Blues/Greens/Purples/YlOrRd).
                 "knots": [
-                    {"id": "basesurface", "colorMap": "interpolateGreys",
+                    {"id": "basesurface", "color_map": "interpolateGreys",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "surfaceTheme", "level": "COORDINATES"},
                          "out": {"name": "surface", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "basewater", "colorMap": "interpolateBlues",
+                    {"id": "basewater", "color_map": "interpolateBlues",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "waterTheme", "level": "COORDINATES"},
                          "out": {"name": "water", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "baseparks", "colorMap": "interpolateGreens",
+                    {"id": "baseparks", "color_map": "interpolateGreens",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "parksTheme", "level": "COORDINATES"},
                          "out": {"name": "parks", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
-                    {"id": "baseroads", "colorMap": "interpolateGreys",
+                    {"id": "baseroads", "color_map": "interpolatePurples",
                      "integration_scheme": [{
                          "spatial_relation": "NEAREST",
                          "in": {"name": "roadsTheme", "level": "COORDINATES"},
                          "out": {"name": "roads", "level": "OBJECTS"},
                          "operation": "NONE", "abstract": True}]},
                     {
+                        # buildings: YlOrRd (yellow=quiet -> red=loud) is an rgb()-returning
+                        # perceptual heat gradient (see gotcha #2 above); inferno was broken.
                         "id": "noiseImpact",
-                        "colorMap": "interpolateInferno",
+                        "color_map": "interpolateYlOrRd",
                         "integration_scheme": [
                             {
                                 "spatial_relation": "NEAREST",

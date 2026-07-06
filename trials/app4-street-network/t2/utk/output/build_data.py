@@ -435,8 +435,16 @@ def configure_layers_and_grammar(centroids, lengths, counts):
 
     log("Writing grammar.json...")
 
+    # NOTE: the frontend reads the knot's colormap from the snake_case key
+    # `color_map` (NOT `colorMap`, which the docs/schema show); when it is
+    # absent the shader silently defaults to `interpolateReds`, so every layer
+    # renders solid red. Also, d3's `interpolateViridis/Inferno/Magma/Plasma`
+    # return HEX strings ("#21918c") which UTK's ColorMap.getColor mis-parses
+    # with `.match(/\d+/g)`; only the single-hue ColorBrewer scales
+    # (Blues/Greens/Greys/Oranges/Purples/Reds — built via rgbBasis) return the
+    # required `rgb(...)` form, so we use those for a valid gradient.
     def base_knot(kid, color, theme, layer):
-        return {"id": kid, "colorMap": color, "integration_scheme": [{
+        return {"id": kid, "color_map": color, "integration_scheme": [{
             "spatial_relation": "NEAREST",
             "in": {"name": theme, "level": "COORDINATES"},
             "out": {"name": layer, "level": "OBJECTS"},
@@ -470,9 +478,9 @@ def configure_layers_and_grammar(centroids, lengths, counts):
                     base_knot("basewater", "interpolateBlues", "waterTheme", "water"),
                     base_knot("baseparks", "interpolateGreens", "parksTheme", "parks"),
                     # Roads colored by per-segment LENGTH (m), OBJECTS level.
-                    base_knot("roadLength", "interpolateViridis", "roadLengthTheme", "roads"),
+                    base_knot("roadLength", "interpolatePurples", "roadLengthTheme", "roads"),
                     # Roads colored by per-segment NOISE count within 10 m.
-                    base_knot("roadNoise", "interpolateInferno", "roadNoiseTheme", "roads"),
+                    base_knot("roadNoise", "interpolateReds", "roadNoiseTheme", "roads"),
                 ],
                 "widgets": [
                     {"type": "TOGGLE_KNOT"},

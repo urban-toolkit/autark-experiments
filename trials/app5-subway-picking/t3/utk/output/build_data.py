@@ -80,15 +80,27 @@ LAYERS = ["water", "parks", "roads", "surface", "buildings"]
 PREFETCH_LAYERS = ["water", "parks", "roads", "buildings"]  # surface is local
 
 # Base (non-building) layers: pickable triangle layers that get a constant
-# colour + a per-triangle ids buffer. (id, colorMap)
+# colour + a per-triangle ids buffer. (id -> colour map).
+#
+# IMPORTANT: UTK's ColorMap.getColor parses the colour-scale output with
+# `interpolator(t).match(/\d+/g)`, so a scale MUST return an "rgb(r, g, b)"
+# string. d3's ColorBrewer scales (Greys/Blues/Greens/Purples/Oranges/Reds/
+# YlOrRd/…) do; the matplotlib scales (Viridis/Inferno/Magma/Plasma) instead
+# return a "#rrggbb" hex string, which the regex mis-parses into a single bogus
+# component -> the element renders solid red. Only rgb()-returning scales are
+# used below. Each scale is also distinct so the four flat base layers are
+# visually separable (grey ground, blue water, green parks, purple roads).
 BASE_LAYERS = {
-    "surface": "interpolateGreys",   # grey ground
-    "water":   "interpolateBlues",   # blue
-    "parks":   "interpolateGreens",  # green
-    "roads":   "interpolateGreys",   # grey street network
+    "surface": "interpolateGreys",    # grey ground
+    "water":   "interpolateBlues",    # blue
+    "parks":   "interpolateGreens",   # green
+    "roads":   "interpolatePurples",  # purple street network (distinct from grey ground)
 }
 
-BUILDINGS_COLORMAP = "interpolateViridis"
+# Buildings gradient: yellow (few stations) -> orange -> red (many stations).
+# ColorBrewer sequential scale -> returns rgb() -> renders a real gradient
+# (NOT interpolateViridis, which returns hex and breaks in UTK; see above).
+BUILDINGS_COLORMAP = "interpolateYlOrRd"
 
 
 # =========================================================================== #
@@ -335,7 +347,9 @@ def write_grammar():
     for layer, cmap in BASE_LAYERS.items():
         knots.append({
             "id": "%sColor" % layer,
-            "colorMap": cmap,
+            # UTK reads the snake_case "color_map" field; "colorMap" is ignored
+            # and the knot silently falls back to the all-red default.
+            "color_map": cmap,
             "integration_scheme": [{
                 "spatial_relation": "NEAREST",
                 "in": {"name": "%sTheme" % layer, "level": "COORDINATES"},
@@ -347,7 +361,7 @@ def write_grammar():
     # buildings coloured by subway-station count within 500 m
     knots.append({
         "id": "subwayAccess",
-        "colorMap": BUILDINGS_COLORMAP,
+        "color_map": BUILDINGS_COLORMAP,
         "integration_scheme": [{
             "spatial_relation": "NEAREST",
             "in": {"name": "subwayCount", "level": "COORDINATES3D"},

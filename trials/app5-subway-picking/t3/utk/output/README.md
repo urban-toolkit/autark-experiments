@@ -11,16 +11,15 @@ the surface, parks, water, roads, or buildings highlights it (turns it blue).
 
 | Layer | Source | Colour | Pickable |
 |-------|--------|--------|----------|
-| **buildings** | OSM (3D extruded footprints) | **Viridis** by subway-station count within 500 m | ✅ |
+| **buildings** | OSM (3D extruded footprints) | **YlOrRd gradient** by subway-station count within 500 m | ✅ |
 | **surface** | OSM ground plane | flat grey | ✅ |
 | **parks** | OSM | flat green | ✅ |
 | **water** | OSM | flat blue | ✅ |
-| **roads** | OSM | flat grey | ✅ |
+| **roads** | OSM | flat purple | ✅ |
 
 Click any element on the map and it turns **blue** to indicate selection.
-The building colour ramp encodes accessibility: brighter (yellow) buildings have
-more subway stations within walking distance; darker (purple) buildings have
-fewer.
+The building colour ramp encodes accessibility: **red** buildings have more
+subway stations within a 500 m walk; **yellow** buildings have fewer.
 
 ---
 
@@ -140,12 +139,42 @@ the four base layers:
    colour function is empty. Each base layer therefore gets a **constant**
    OBJECTS-level abstract join (`<layer>Theme.json` + `<layer>_joined.json`): a
    single constant value per feature. A constant produces a degenerate colour
-   domain, which the colour-map shader renders as one flat natural tone (grey
-   ground, blue water, green parks, grey roads). Buildings instead carry the
-   real per-vertex `subwayCount` join, giving the Viridis accessibility ramp.
+   domain, which the colour-map shader renders as one flat tone (grey ground,
+   blue water, green parks, purple roads). Buildings instead carry the real
+   per-vertex `subwayCount` join, giving the yellow→red accessibility ramp.
 
 A picked element is drawn solid **blue** by the picking shader, satisfying the
 "colour changes on click" requirement.
+
+---
+
+## Colouring: the `color_map` field and rgb-only colour scales
+
+Two UTK-specific rules govern how each knot is coloured. Getting either wrong
+makes **every layer render solid red** (UTK's default), so they are worth
+spelling out:
+
+1. **The grammar field is `color_map` (snake_case), not `colorMap`.** UTK's
+   `KnotView` reads `knotSpecification.color_map` and silently falls back to
+   `interpolateReds` when it is absent. A camelCase `colorMap` is ignored → every
+   knot defaults to red.
+
+2. **The colour scale must return `"rgb(r, g, b)"`, not hex.** UTK parses the
+   scale output with `interpolator(t).match(/\d+/g).map(e => +e/255)`. d3's
+   **ColorBrewer** scales (`Greys`, `Blues`, `Greens`, `Purples`, `Oranges`,
+   `Reds`, `YlOrRd`, `YlGnBu`, `Spectral`, `RdYlGn`, …) return `rgb()` and work.
+   The **matplotlib** scales (`Viridis`, `Inferno`, `Magma`, `Plasma`) return a
+   `"#rrggbb"` **hex** string; the `\d+` regex then extracts a single bogus
+   number and the element renders solid red. This app therefore uses only
+   rgb-returning scales:
+
+   | Knot | Layer | Scale | Result |
+   |------|-------|-------|--------|
+   | `surfaceColor` | surface | `interpolateGreys`   | flat grey |
+   | `waterColor`   | water   | `interpolateBlues`   | flat blue |
+   | `parksColor`   | parks   | `interpolateGreens`  | flat green |
+   | `roadsColor`   | roads   | `interpolatePurples` | flat purple |
+   | `subwayAccess` | buildings | `interpolateYlOrRd` | **yellow→orange→red gradient** (few→many stations) |
 
 ---
 

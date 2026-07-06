@@ -59,8 +59,9 @@ Then open the URL printed by the server (default **http://localhost:5001**) in a
 - The map shows Manhattan's surface (grey), water (blue), parks (green) and the road
   network (colored).
 - Use the **toggle knot** widget (top of the map) to switch the road coloring between
-  **`roadLength`** (viridis — segment length in meters) and **`roadNoise`** (inferno —
+  **`roadLength`** (Purples — segment length in meters) and **`roadNoise`** (Reds —
   noise complaints within 10 m).
+- The base layers are flat, distinct tones: surface grey, water blue, parks green.
 - **Click** any surface / park / water / road element to select it; the selected element
   is highlighted in blue.
 - Open the browser **console** to watch the load/render progress logged by the frontend.
@@ -94,7 +95,7 @@ download and just recompute the thematic values and grammar.
 | Per-segment **length** | centre-line captured in mesh order, measured in EPSG:32618 (UTM 18N, true meters) |
 | Load noise CSV | `data/noise.csv` (NYC 311), projected EPSG:4326 → 32618 |
 | **Count noise within 10 m** of each segment | `shapely.STRtree` `dwithin` query, per segment |
-| Color roads by length **or** noise + toggle | two OBJECTS-level knots on the roads layer (`roadLength`, `roadNoise`) + UTK `TOGGLE_KNOT` widget |
+| Color roads by length **or** noise + toggle | two OBJECTS-level knots on the roads layer (`roadLength` Purples, `roadNoise` Reds) + UTK `TOGGLE_KNOT` widget. NB: the colormap is set via the knot's `color_map` key (snake_case — the frontend ignores the docs' `colorMap` and then defaults to red), and only single-hue ColorBrewer scales that return `rgb(...)` work (viridis/inferno return hex and break UTK's parser). |
 | Pick elements on any layer | each base layer is a pickable `TRIANGLES_3D_LAYER` (`["SMOOTH_COLOR_MAP","PICKING"]`) with a per-triangle id buffer; clicked element turns blue |
 | README | this file |
 
